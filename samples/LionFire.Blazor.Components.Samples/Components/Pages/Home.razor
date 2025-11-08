@@ -1,0 +1,53 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>LionFire Blazor Components Samples</h1>
+
+<p>This application demonstrates various Blazor components and layouts.</p>
+
+<h2>Available Demos</h2>
+
+<ul class="demo-list">
+    <li>
+        <a href="/vscode-layout">
+            <h3>💻 VS Code Style Layout</h3>
+            <p>A VS Code-inspired split pane layout with collapsible sidebar, resizable panes, and project explorer.</p>
+        </a>
+    </li>
+</ul>
+
+<style>
+    .demo-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .demo-list li {
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        transition: box-shadow 0.2s;
+    }
+
+    .demo-list li:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .demo-list a {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .demo-list h3 {
+        margin-top: 0;
+        color: #007acc;
+    }
+
+    .demo-list p {
+        margin-bottom: 0;
+        color: #666;
+    }
+</style>

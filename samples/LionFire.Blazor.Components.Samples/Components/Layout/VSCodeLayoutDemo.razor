@@ -1,0 +1,301 @@
+@page "/vscode-layout"
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>VS Code Style Layout</PageTitle>
+
+<div class="vscode-layout" data-theme="@CurrentTheme">
+    <!-- Activity Bar (Far Left) -->
+    <aside class="vscode-activity-bar">
+        <div class="activity-bar-items">
+            <button class="activity-bar-item @(ActiveTab == "explorer" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("explorer"))"
+                    title="Explorer">
+                <i class="activity-icon">📁</i>
+            </button>
+            <button class="activity-bar-item @(ActiveTab == "search" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("search"))"
+                    title="Search">
+                <i class="activity-icon">🔍</i>
+            </button>
+            <button class="activity-bar-item @(ActiveTab == "extensions" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("extensions"))"
+                    title="Extensions">
+                <i class="activity-icon">🧩</i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Sidebar (Content Area) -->
+    <aside class="vscode-sidebar @(IsSidebarCollapsed ? "collapsed" : "expanded")">
+        <div class="sidebar-content">
+            @if (ActiveTab == "explorer" && !IsSidebarCollapsed)
+            {
+                <div class="sidebar-panel explorer-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">EXPLORER</h3>
+                        <div class="panel-actions">
+                            <button class="action-btn" @onclick="RefreshProjects" title="Refresh">
+                                <i class="icon">🔄</i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-content">
+                        <!-- Project Tree -->
+                        <div class="project-tree">
+                            @foreach (var project in Projects)
+                            {
+                                <div class="tree-node project-node @(ExpandedProjects.Contains(project.Id) ? "expanded" : "collapsed")">
+                                    <div class="node-content" @onclick="@(() => ToggleProjectExpansion(project.Id))">
+                                        <i class="expand-icon">@(ExpandedProjects.Contains(project.Id) ? "▼" : "▶")</i>
+                                        <i class="node-icon">📁</i>
+                                        <span class="node-label">@project.Name</span>
+                                    </div>
+
+                                    @if (ExpandedProjects.Contains(project.Id))
+                                    {
+                                        <div class="node-children">
+                                            @foreach (var task in project.Tasks)
+                                            {
+                                                <div class="tree-node work-item-node @(SelectedTaskId == task.Id ? "selected" : "")"
+                                                     @onclick="@(() => SelectTask(task))"
+                                                     @onclick:stopPropagation="true">
+                                                    <div class="node-content">
+                                                        <i class="node-icon">📝</i>
+                                                        <span class="node-label">@task.Title</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (ActiveTab == "search" && !IsSidebarCollapsed)
+            {
+                <div class="sidebar-panel search-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">SEARCH</h3>
+                    </div>
+                    <div class="panel-content">
+                        <p class="text-muted">Search functionality demo</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="vscode-main">
+        <!-- Top Pane - Task Description (Collapsible) -->
+        <div class="content-pane top-pane @(IsTopPaneCollapsed ? "collapsed" : "")"
+             style="@($"height: {TopPaneHeight}px")">
+            <div class="pane-header">
+                <div class="pane-title">
+                    @if (SelectedTask != null)
+                    {
+                        <i class="pane-icon">📝</i>
+                        <span>@SelectedTask.Title</span>
+                    }
+                    else
+                    {
+                        <i class="pane-icon">📝</i>
+                        <span>Task Details</span>
+                    }
+                </div>
+                <div class="pane-controls">
+                    <button class="control-btn" @onclick="ToggleTopPane" title="@(IsTopPaneCollapsed ? "Expand" : "Collapse")">
+                        <i class="icon">@(IsTopPaneCollapsed ? "▲" : "▼")</i>
+                    </button>
+                </div>
+            </div>
+
+            @if (!IsTopPaneCollapsed)
+            {
+                <div class="pane-content">
+                    @if (SelectedTask != null)
+                    {
+                        <div class="task-editor">
+                            <div class="task-description">
+                                <textarea class="description-editor"
+                                          placeholder="Task description..."
+                                          @bind="SelectedTask.Description">@SelectedTask.Description</textarea>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-selection">
+                            <i class="empty-icon">📝</i>
+                            <p class="empty-text">Select a task to view details</p>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Pane Resizer -->
+        @if (!IsTopPaneCollapsed && !IsBottomPaneCollapsed)
+        {
+            <div class="pane-resizer"></div>
+        }
+
+        <!-- Bottom Pane - Output Viewer (Collapsible) -->
+        <div class="content-pane bottom-pane @(IsBottomPaneCollapsed ? "collapsed" : "")"
+             style="@($"height: calc(100% - {(IsTopPaneCollapsed ? 35 : TopPaneHeight)}px - {(IsTopPaneCollapsed || IsBottomPaneCollapsed ? 0 : 4)}px)")">
+            <div class="pane-header">
+                <div class="pane-title">
+                    <i class="pane-icon">💻</i>
+                    <span>Output</span>
+                </div>
+                <div class="pane-controls">
+                    <button class="control-btn" @onclick="ClearOutput" title="Clear output">
+                        <i class="icon">🗑️</i>
+                    </button>
+                    <button class="control-btn" @onclick="ToggleBottomPane" title="@(IsBottomPaneCollapsed ? "Expand" : "Collapse")">
+                        <i class="icon">@(IsBottomPaneCollapsed ? "▲" : "▼")</i>
+                    </button>
+                </div>
+            </div>
+
+            @if (!IsBottomPaneCollapsed)
+            {
+                <div class="pane-content">
+                    <div class="terminal-display">
+                        @foreach (var line in OutputLines)
+                        {
+                            <div class="terminal-line">
+                                <span class="line-content">@line</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@code {
+    // Layout state
+    private bool IsSidebarCollapsed { get; set; } = false;
+    private string ActiveTab { get; set; } = "explorer";
+    private string CurrentTheme { get; set; } = "dark";
+
+    // Pane state
+    private bool IsTopPaneCollapsed { get; set; } = false;
+    private bool IsBottomPaneCollapsed { get; set; } = false;
+    private int TopPaneHeight { get; set; } = 300;
+
+    // Data state
+    private List<Project> Projects { get; set; } = new();
+    private HashSet<string> ExpandedProjects { get; set; } = new();
+    private string? SelectedTaskId { get; set; }
+    private TaskItem? SelectedTask { get; set; }
+    private List<string> OutputLines { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        LoadSampleData();
+    }
+
+    private void LoadSampleData()
+    {
+        Projects = new List<Project>
+        {
+            new Project
+            {
+                Id = "project-1",
+                Name = "LionFire.Blazor.Components",
+                Tasks = new List<TaskItem>
+                {
+                    new TaskItem { Id = "task-1", Title = "Add InlineSelector component", Description = "Create a new InlineSelector component with favorites support" },
+                    new TaskItem { Id = "task-2", Title = "Add VSCodeLayout component", Description = "Port the VSCode-style layout from Axi dashboard" }
+                }
+            },
+            new Project
+            {
+                Id = "project-2",
+                Name = "Documentation",
+                Tasks = new List<TaskItem>
+                {
+                    new TaskItem { Id = "task-3", Title = "Write component docs", Description = "Document all component features and usage" },
+                    new TaskItem { Id = "task-4", Title = "Create examples", Description = "Add code examples for each component" }
+                }
+            }
+        };
+
+        OutputLines = new List<string>
+        {
+            "Welcome to VS Code Style Layout Demo",
+            "This is a demonstration of a VS Code-inspired split pane layout",
+            "Click on tasks in the explorer to view their details",
+            "Try collapsing and expanding the panes!"
+        };
+
+        // Expand first project by default
+        ExpandedProjects.Add("project-1");
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        ActiveTab = tab;
+    }
+
+    private void ToggleProjectExpansion(string projectId)
+    {
+        if (ExpandedProjects.Contains(projectId))
+        {
+            ExpandedProjects.Remove(projectId);
+        }
+        else
+        {
+            ExpandedProjects.Add(projectId);
+        }
+    }
+
+    private void SelectTask(TaskItem task)
+    {
+        SelectedTaskId = task.Id;
+        SelectedTask = task;
+        OutputLines.Add($"Selected task: {task.Title}");
+    }
+
+    private void ToggleTopPane()
+    {
+        IsTopPaneCollapsed = !IsTopPaneCollapsed;
+    }
+
+    private void ToggleBottomPane()
+    {
+        IsBottomPaneCollapsed = !IsBottomPaneCollapsed;
+    }
+
+    private void ClearOutput()
+    {
+        OutputLines.Clear();
+    }
+
+    private void RefreshProjects()
+    {
+        OutputLines.Add("Refreshing projects...");
+    }
+
+    // Data models
+    private class Project
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public List<TaskItem> Tasks { get; set; } = new();
+    }
+
+    private class TaskItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}
