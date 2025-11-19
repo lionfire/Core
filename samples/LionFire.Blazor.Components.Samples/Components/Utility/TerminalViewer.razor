@@ -1,0 +1,303 @@
+@using Microsoft.AspNetCore.Components
+@using System.Text.Json
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="terminal-container @(IsFullScreen ? "fullscreen" : "")" @ref="terminalContainer">
+    <div class="terminal-header">
+        <div class="terminal-title">
+            <span class="terminal-icon">⬛</span>
+            <span>@Title</span>
+        </div>
+        <div class="terminal-controls">
+            <button class="control-btn" @onclick="ToggleAutoScroll" title="Toggle Auto-scroll">
+                <span class="@(AutoScroll ? "icon-scroll-on" : "icon-scroll-off")"></span>
+            </button>
+            <button class="control-btn" @onclick="ClearBuffer" title="Clear Buffer">
+                <span class="icon-clear"></span>
+            </button>
+            <button class="control-btn" @onclick="ToggleFullScreen" title="Full Screen">
+                <span class="icon-fullscreen"></span>
+            </button>
+            <button class="control-btn" @onclick="CopyToClipboard" title="Copy Selected Text">
+                <span class="icon-copy"></span>
+            </button>
+            <button class="control-btn @(EnableRightClickCopy ? "active" : "")" @onclick="ToggleRightClickCopy" title="@(EnableRightClickCopy ? "Right-click Copy: ON" : "Right-click Copy: OFF")">
+                <span class="@(EnableRightClickCopy ? "icon-rightclick-on" : "icon-rightclick-off")"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="terminal-content" @ref="terminalContent" @onscroll="OnScroll">
+        <div class="terminal-output" @ref="terminalOutput">
+            @if (OutputLines != null && OutputLines.Any())
+            {
+                @for (int i = Math.Max(0, OutputLines.Count - MaxVisibleLines); i < OutputLines.Count; i++)
+                {
+                    <div class="terminal-line" data-line-number="@(i + 1)">
+                        @((MarkupString)ParseAnsiColors(OutputLines[i]))
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="terminal-line terminal-empty">
+                    <span class="prompt">$</span> Ready for terminal output...
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Terminal";
+    [Parameter] public List<string> OutputLines { get; set; } = new();
+    [Parameter] public bool AutoScroll { get; set; } = true;
+    [Parameter] public int MaxLines { get; set; } = 1000;
+    [Parameter] public int MaxVisibleLines { get; set; } = 50;
+    [Parameter] public EventCallback<string> OnCommand { get; set; }
+    [Parameter] public bool IsFullScreen { get; set; } = false;
+    [Parameter] public bool EnableRightClickCopy { get; set; } = true;
+
+    private ElementReference terminalContainer;
+    private ElementReference terminalContent;
+    private ElementReference terminalOutput;
+    private bool isUserScrolling = false;
+    private bool shouldAutoScroll = true;
+    private DotNetObjectReference<TerminalViewer>? dotNetRef;
+    private bool lastEnableRightClickCopy = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("terminalViewer.initialize", terminalContainer, dotNetRef, EnableRightClickCopy);
+            lastEnableRightClickCopy = EnableRightClickCopy;
+        }
+
+        if (AutoScroll && shouldAutoScroll && !isUserScrolling)
+        {
+            await ScrollToBottom();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Update right-click handler if the parameter changed
+        if (dotNetRef != null && lastEnableRightClickCopy != EnableRightClickCopy)
+        {
+            await JSRuntime.InvokeVoidAsync("terminalViewer.updateRightClickCopy", terminalContainer, dotNetRef, EnableRightClickCopy);
+            lastEnableRightClickCopy = EnableRightClickCopy;
+        }
+    }
+
+    public async Task AddLine(string line)
+    {
+        OutputLines.Add(line);
+
+        // Trim buffer if it exceeds max lines
+        if (OutputLines.Count > MaxLines)
+        {
+            OutputLines.RemoveRange(0, OutputLines.Count - MaxLines);
+        }
+
+        StateHasChanged();
+
+        if (AutoScroll && !isUserScrolling)
+        {
+            await ScrollToBottom();
+        }
+    }
+
+    public async Task AddLines(IEnumerable<string> lines)
+    {
+        foreach (var line in lines)
+        {
+            OutputLines.Add(line);
+        }
+
+        // Trim buffer if it exceeds max lines
+        if (OutputLines.Count > MaxLines)
+        {
+            OutputLines.RemoveRange(0, OutputLines.Count - MaxLines);
+        }
+
+        StateHasChanged();
+
+        if (AutoScroll && !isUserScrolling)
+        {
+            await ScrollToBottom();
+        }
+    }
+
+    private async Task ScrollToBottom()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("terminalViewer.scrollToBottom", terminalContent);
+        }
+        catch (Exception)
+        {
+            // Ignore scroll errors
+        }
+    }
+
+    private async Task OnScroll()
+    {
+        try
+        {
+            var scrollInfo = await JSRuntime.InvokeAsync<JsonElement>("terminalViewer.getScrollInfo", terminalContent);
+            var scrollTop = scrollInfo.GetProperty("scrollTop").GetDouble();
+            var scrollHeight = scrollInfo.GetProperty("scrollHeight").GetDouble();
+            var clientHeight = scrollInfo.GetProperty("clientHeight").GetDouble();
+
+            // Check if user is near the bottom (within 50px)
+            var isNearBottom = (scrollHeight - scrollTop - clientHeight) < 50;
+
+            if (!isNearBottom)
+            {
+                isUserScrolling = true;
+                shouldAutoScroll = false;
+            }
+            else
+            {
+                isUserScrolling = false;
+                shouldAutoScroll = AutoScroll;
+            }
+        }
+        catch (Exception)
+        {
+            // Ignore scroll calculation errors
+        }
+    }
+
+    private void ToggleAutoScroll()
+    {
+        AutoScroll = !AutoScroll;
+        shouldAutoScroll = AutoScroll;
+
+        if (AutoScroll)
+        {
+            isUserScrolling = false;
+            InvokeAsync(ScrollToBottom);
+        }
+    }
+
+    private void ClearBuffer()
+    {
+        OutputLines.Clear();
+        StateHasChanged();
+    }
+
+    private void ToggleFullScreen()
+    {
+        IsFullScreen = !IsFullScreen;
+        StateHasChanged();
+    }
+
+    private void ToggleRightClickCopy()
+    {
+        EnableRightClickCopy = !EnableRightClickCopy;
+        StateHasChanged();
+    }
+
+    private async Task CopyToClipboard()
+    {
+        try
+        {
+            var selectedText = await JSRuntime.InvokeAsync<string>("terminalViewer.getSelectedText");
+
+            // If no text is selected, copy all terminal output
+            if (string.IsNullOrEmpty(selectedText))
+            {
+                selectedText = string.Join("\n", OutputLines);
+            }
+
+            if (!string.IsNullOrEmpty(selectedText))
+            {
+                // Strip ANSI codes from the text before copying
+                var cleanText = System.Text.RegularExpressions.Regex.Replace(selectedText, @"\x1B\[[0-9;]*m", "");
+                await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cleanText);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error for debugging
+            Console.WriteLine($"Copy to clipboard failed: {ex.Message}");
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnRightClickCopy()
+    {
+        await CopyToClipboard();
+    }
+
+    [JSInvokable]
+    public async Task OnRightClickCopyWithText(string capturedText)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(capturedText))
+            {
+                // Strip ANSI codes from the captured text before copying
+                var cleanText = System.Text.RegularExpressions.Regex.Replace(capturedText, @"\x1B\[[0-9;]*m", "");
+                await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cleanText);
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error for debugging
+            Console.WriteLine($"Copy to clipboard failed: {ex.Message}");
+        }
+    }
+
+    public void Dispose()
+    {
+        dotNetRef?.Dispose();
+    }
+
+    private string ParseAnsiColors(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return "&nbsp;";
+
+        // Basic ANSI color code parsing
+        var result = input;
+
+        // Reset codes
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[0m", "</span>");
+
+        // Foreground colors
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[30m", "<span class='ansi-black'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[31m", "<span class='ansi-red'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[32m", "<span class='ansi-green'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[33m", "<span class='ansi-yellow'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[34m", "<span class='ansi-blue'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[35m", "<span class='ansi-magenta'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[36m", "<span class='ansi-cyan'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[37m", "<span class='ansi-white'>");
+
+        // Bright foreground colors
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[90m", "<span class='ansi-bright-black'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[91m", "<span class='ansi-bright-red'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[92m", "<span class='ansi-bright-green'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[93m", "<span class='ansi-bright-yellow'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[94m", "<span class='ansi-bright-blue'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[95m", "<span class='ansi-bright-magenta'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[96m", "<span class='ansi-bright-cyan'>");
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[97m", "<span class='ansi-bright-white'>");
+
+        // Bold/Bright
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[1m", "<span class='ansi-bold'>");
+
+        // Remove any remaining escape sequences
+        result = System.Text.RegularExpressions.Regex.Replace(result, @"\x1B\[[0-9;]*m", "");
+
+        // Convert spaces to non-breaking spaces to preserve formatting
+        result = result.Replace(" ", "&nbsp;");
+
+        return result;
+    }
+}

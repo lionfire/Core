@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>LionFire.Blazor.Components.MudBlazor_.Experimental.Samples</RootNamespace>
+    <UsingMudBlazorNamespace>false</UsingMudBlazorNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Blazor.Components.MudBlazor.Experimental\LionFire.Blazor.Components.MudBlazor.Experimental.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="MudBlazor" />
+  </ItemGroup>
+
+</Project>

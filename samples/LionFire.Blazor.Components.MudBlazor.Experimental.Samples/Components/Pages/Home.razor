@@ -1,0 +1,124 @@
+﻿@page "/"
+@using MudBlazor
+
+<PageTitle>Home</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-4">
+    <MudStack Spacing="4">
+        <!-- Header -->
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h3" Class="mb-2">Welcome to MudBlazor Experimental</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                This application demonstrates advanced component capabilities including interactive Kanban boards with drag-and-drop support.
+            </MudText>
+        </MudPaper>
+
+        <!-- Features -->
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-3">Available Features</MudText>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Dashboard" Style="font-size: 2rem; color: var(--mud-palette-primary);" />
+                                <MudText Typo="Typo.h6">Kanban Board Demo</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    Interactive Kanban board with drag-and-drop functionality, card management, and greenlight status indicators.
+                                </MudText>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" href="kanban-demo" FullWidth="true" Class="mt-2">
+                                    View Demo
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Add" Style="font-size: 2rem; color: var(--mud-palette-success);" />
+                                <MudText Typo="Typo.h6">Counter</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    Basic interactive counter component demonstrating component state management.
+                                </MudText>
+                                <MudButton Variant="Variant.Filled" Color="Color.Success" Size="Size.Small" href="counter" FullWidth="true" Class="mt-2">
+                                    View Demo
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudIcon Icon="@Icons.Material.Filled.Cloud" Style="font-size: 2rem; color: var(--mud-palette-info);" />
+                                <MudText Typo="Typo.h6">Weather</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    Sample weather data display using tables and data binding.
+                                </MudText>
+                                <MudButton Variant="Variant.Filled" Color="Color.Info" Size="Size.Small" href="weather" FullWidth="true" Class="mt-2">
+                                    View Demo
+                                </MudButton>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <!-- Key Features -->
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-3">Kanban Board Highlights</MudText>
+            <MudStack Spacing="1">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.DragIndicator" Color="Color.Primary" />
+                    <MudText>Drag-and-drop card movement between columns</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" />
+                    <MudText>Greenlight status indicators (Approved, Conditional, Not Approved)</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Info" />
+                    <MudText>Create and edit cards with full task details</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.ViewWeek" Color="Color.Warning" />
+                    <MudText>Add and manage board columns dynamically</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.SmartToy" Color="Color.Secondary" />
+                    <MudText>Card claiming system for agent/user assignment</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
+                    <MudText>Board and column configuration dialogs</MudText>
+                </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Tertiary" />
+                    <MudText>Real-time activity logging of all interactions</MudText>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+
+        <!-- Getting Started -->
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h5" Class="mb-3">Getting Started</MudText>
+            <MudText Typo="Typo.body1" Class="mb-2">
+                Navigate to the <strong>Kanban Demo</strong> section using the menu to explore the interactive board. You can:
+            </MudText>
+            <MudStack Spacing="1">
+                <MudText>• Drag cards between columns to organize tasks</MudText>
+                <MudText>• Create new cards and columns using the action buttons</MudText>
+                <MudText>• Edit card details, priorities, and assignments</MudText>
+                <MudText>• Claim and release cards for agent assignment</MudText>
+                <MudText>• Monitor activity in real-time with the activity log</MudText>
+                <MudText>• Reset the board to restore the initial state</MudText>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</MudContainer>

@@ -1,0 +1,188 @@
+<MudPaper Class="@($"kanban-column {GetColumnClass()}")" Elevation="1">
+    <MudStack Spacing="0">
+        <!-- Column Header -->
+        <MudPaper Class="column-header pa-3" Style="@GetHeaderStyle()">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudText Typo="Typo.h6" Class="column-title">@Column.Name</MudText>
+                    @if (Column.WipLimit.HasValue)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="@GetWipColor()" Label="true">
+                            @Cards.Count() / @Column.WipLimit
+                        </MudChip>
+                    }
+                    <MudTooltip Text="@GetGreenlightTooltip()">
+                        <MudIcon Icon="@GetGreenlightIcon()" Color="@GetGreenlightIconColor()" />
+                    </MudTooltip>
+                </MudStack>
+                <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" OnClick="@(() => ShowColumnMenu())" />
+            </MudStack>
+        </MudPaper>
+
+        <!-- Cards Container -->
+        <MudPaper Class="cards-container" Style="min-height: 400px; max-height: 70vh; overflow-y: auto;">
+            <MudDropZone T="KanbanCard" Identifier="@Column.Id.ToString()" CanDrop="@((item) => CanDropCard(item))"
+                        Class="mud-height-full pa-2">
+                @if (!Cards.Any())
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center" Class="pa-4">
+                        No cards in this column
+                    </MudText>
+                }
+                else
+                {
+                    @foreach (var card in Cards.OrderBy(c => c.Position))
+                    {
+                        <KanbanCardComponent Card="@card"
+                                           OnEdit="@OnCardEdit"
+                                           OnDelete="@OnCardDelete"
+                                           OnClaim="@OnCardClaim"
+                                           OnRelease="@OnCardRelease" />
+                    }
+                }
+            </MudDropZone>
+        </MudPaper>
+
+        <!-- Add Card Button -->
+        @if (CanAddCard)
+        {
+            <MudPaper Class="pa-2">
+                <MudButton StartIcon="@Icons.Material.Filled.Add"
+                          Color="Color.Primary"
+                          Variant="Variant.Text"
+                          FullWidth="true"
+                          OnClick="@OnAddCard">
+                    Add Card
+                </MudButton>
+            </MudPaper>
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter] public KanbanColumn Column { get; set; } = null!;
+    [Parameter] public IEnumerable<KanbanCard> Cards { get; set; } = Enumerable.Empty<KanbanCard>();
+    [Parameter] public bool CanAddCard { get; set; } = true;
+    [Parameter] public EventCallback<KanbanColumn> OnColumnEdit { get; set; }
+    [Parameter] public EventCallback<KanbanColumn> OnColumnDelete { get; set; }
+    [Parameter] public EventCallback OnAddCard { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnCardEdit { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnCardDelete { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnCardClaim { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnCardRelease { get; set; }
+    [Parameter] public EventCallback<(KanbanCard card, Guid targetColumnId)> OnCardMoved { get; set; }
+
+    private string GetColumnClass()
+    {
+        return Column.GreenlightStatus switch
+        {
+            GreenlightStatus.Approved => "greenlight-approved",
+            GreenlightStatus.Conditional => "greenlight-conditional",
+            _ => "greenlight-not-approved"
+        };
+    }
+
+    private string GetHeaderStyle()
+    {
+        return $"background-color: {Column.Color}20; border-left: 4px solid {Column.Color};";
+    }
+
+    private global::MudBlazor.Color GetWipColor()
+    {
+        if (!Column.WipLimit.HasValue) return global::MudBlazor.Color.Default;
+        var cardCount = Cards.Count();
+        if (cardCount > Column.WipLimit) return global::MudBlazor.Color.Error;
+        if (cardCount == Column.WipLimit) return global::MudBlazor.Color.Warning;
+        return global::MudBlazor.Color.Success;
+    }
+
+    private string GetGreenlightIcon()
+    {
+        return Column.GreenlightStatus switch
+        {
+            GreenlightStatus.Approved => Icons.Material.Filled.CheckCircle,
+            GreenlightStatus.Conditional => Icons.Material.Filled.PauseCircle,
+            _ => Icons.Material.Filled.Cancel
+        };
+    }
+
+    private global::MudBlazor.Color GetGreenlightIconColor()
+    {
+        return Column.GreenlightStatus switch
+        {
+            GreenlightStatus.Approved => global::MudBlazor.Color.Success,
+            GreenlightStatus.Conditional => global::MudBlazor.Color.Warning,
+            _ => global::MudBlazor.Color.Error
+        };
+    }
+
+    private string GetGreenlightTooltip()
+    {
+        var status = Column.GreenlightStatus switch
+        {
+            GreenlightStatus.Approved => "Approved: Agents can work autonomously",
+            GreenlightStatus.Conditional => "Conditional: Agents need permission per task",
+            _ => "Not Approved: Agents cannot work on these tasks"
+        };
+
+        if (!string.IsNullOrEmpty(Column.GreenlightReason))
+        {
+            status += $"\n{Column.GreenlightReason}";
+        }
+
+        return status;
+    }
+
+    private bool CanDropCard(KanbanCard card)
+    {
+        // Check WIP limit
+        if (Column.WipLimit.HasValue && Cards.Count() >= Column.WipLimit)
+        {
+            return false;
+        }
+
+        // Additional business rules can be added here
+        return true;
+    }
+
+    private void ShowColumnMenu()
+    {
+        // TODO: Show column context menu
+    }
+}
+
+<style>
+    .kanban-column {
+        width: 300px;
+        min-width: 300px;
+        background-color: var(--mud-palette-surface);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .column-header {
+        border-radius: 8px 8px 0 0;
+    }
+
+    .column-title {
+        font-weight: 600;
+    }
+
+    .cards-container {
+        flex: 1;
+        background-color: var(--mud-palette-background);
+    }
+
+    .greenlight-approved {
+        box-shadow: 0 0 0 2px var(--mud-palette-success);
+    }
+
+    .greenlight-conditional {
+        box-shadow: 0 0 0 2px var(--mud-palette-warning);
+    }
+
+    .greenlight-not-approved {
+        box-shadow: 0 0 0 2px var(--mud-palette-error);
+    }
+</style>

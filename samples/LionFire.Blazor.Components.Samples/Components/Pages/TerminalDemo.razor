@@ -1,0 +1,426 @@
+@page "/terminal-demo"
+@rendermode InteractiveServer
+@using LionFire.Blazor.Components.Samples.Components.Utility
+
+<PageTitle>Terminal Viewer Demo</PageTitle>
+
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Terminal Viewer Demo</h1>
+            <p class="lead">
+                A terminal output viewer with ANSI color support, auto-scrolling, and line buffering.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <h3>Features</h3>
+            <ul>
+                <li>ANSI color code support (16 colors + bright variants)</li>
+                <li>Auto-scroll with manual override detection</li>
+                <li>Line buffering with configurable limits</li>
+                <li>Copy selected text to clipboard</li>
+                <li>Full-screen mode</li>
+                <li>Clear buffer functionality</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <h4>Sample Scenarios</h4>
+            <div class="btn-group mb-2 me-2" role="group">
+                <button class="btn btn-primary" @onclick="SimulateBuildProcess">🔨 Build Process</button>
+                <button class="btn btn-success" @onclick="SimulateGitOperations">📦 Git Operations</button>
+                <button class="btn btn-info" @onclick="SimulateTestExecution">🧪 Test Execution</button>
+                <button class="btn btn-warning" @onclick="SimulateDeployment">🚀 Deployment</button>
+            </div>
+            <div class="btn-group mb-2" role="group">
+                <button class="btn btn-secondary" @onclick="SimulateDockerBuild">🐳 Docker Build</button>
+                <button class="btn btn-danger" @onclick="SimulateErrorScenario">❌ Error Scenario</button>
+                <button class="btn btn-dark" @onclick="AddSampleLine">➕ Single Line</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">📊 Gradual Output (Auto-scroll Test)</h5>
+                    <p class="card-text mb-2">
+                        Test the auto-scroll feature by streaming output gradually to the terminal.
+                    </p>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="slowStreamCheck" @bind="useSlowStream">
+                        <label class="form-check-label" for="slowStreamCheck">
+                            Slow stream (500ms delay between lines)
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" @onclick="SimulateGradualOutput" disabled="@isStreaming">
+                        @(isStreaming ? "⏳ Streaming..." : "▶️ Start Gradual Stream")
+                    </button>
+                    @if (isStreaming)
+                    {
+                        <button class="btn btn-danger ms-2" @onclick="StopGradualOutput">
+                            ⏹️ Stop
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <TerminalViewer @ref="terminal"
+                          Title="Demo Terminal"
+                          OutputLines="@outputLines"
+                          AutoScroll="true"
+                          MaxLines="500"
+                          MaxVisibleLines="100" />
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col">
+            <h3>Usage Example</h3>
+            <pre><code>@@page "/terminal-demo"
+@@rendermode InteractiveServer
+
+&lt;TerminalViewer @@ref="terminal"
+              Title="My Terminal"
+              OutputLines="@@outputLines"
+              AutoScroll="true"
+              MaxLines="1000"
+              MaxVisibleLines="50" /&gt;
+
+@@code {
+    private TerminalViewer terminal;
+    private List&lt;string&gt; outputLines = new();
+
+    private async Task AddLine()
+    {
+        await terminal.AddLine("New output line");
+    }
+}</code></pre>
+        </div>
+    </div>
+</div>
+
+@code {
+    private TerminalViewer? terminal;
+    private List<string> outputLines = new();
+    private int lineCounter = 0;
+    private bool useSlowStream = false;
+    private bool isStreaming = false;
+    private CancellationTokenSource? streamingCts;
+
+    protected override void OnInitialized()
+    {
+        // Add welcome message
+        outputLines.Add("\x1B[92m╔════════════════════════════════════════╗\x1B[0m");
+        outputLines.Add("\x1B[92m║  Welcome to Terminal Viewer Demo      ║\x1B[0m");
+        outputLines.Add("\x1B[92m╚════════════════════════════════════════╝\x1B[0m");
+        outputLines.Add("");
+        outputLines.Add("\x1B[36mTerminal ready. Click buttons above to add output.\x1B[0m");
+        outputLines.Add("");
+    }
+
+    private async Task AddSampleLine()
+    {
+        if (terminal != null)
+        {
+            lineCounter++;
+            await terminal.AddLine($"[{DateTime.Now:HH:mm:ss}] Sample line #{lineCounter}");
+        }
+    }
+
+    private async Task SimulateGradualOutput()
+    {
+        if (terminal == null || isStreaming) return;
+
+        isStreaming = true;
+        streamingCts = new CancellationTokenSource();
+        StateHasChanged();
+
+        try
+        {
+            var delay = useSlowStream ? 500 : 100; // ms between lines
+            var totalLines = 50;
+
+            await terminal.AddLine("");
+            await terminal.AddLine("\x1B[1m\x1B[36m▶️  Starting gradual output stream...\x1B[0m");
+            await terminal.AddLine("");
+
+            var startTime = DateTime.Now;
+
+            for (int i = 1; i <= totalLines; i++)
+            {
+                if (streamingCts.Token.IsCancellationRequested)
+                {
+                    await terminal.AddLine("");
+                    await terminal.AddLine("\x1B[33m⏹️  Stream stopped by user\x1B[0m");
+                    break;
+                }
+
+                var elapsed = (DateTime.Now - startTime).TotalSeconds;
+                var colorCode = (i % 8) switch
+                {
+                    0 => "\x1B[31m", // red
+                    1 => "\x1B[32m", // green
+                    2 => "\x1B[33m", // yellow
+                    3 => "\x1B[34m", // blue
+                    4 => "\x1B[35m", // magenta
+                    5 => "\x1B[36m", // cyan
+                    6 => "\x1B[91m", // bright red
+                    _ => "\x1B[92m"  // bright green
+                };
+
+                var message = i switch
+                {
+                    <= 10 => $"Initializing process {i}/10...",
+                    <= 20 => $"Loading configuration {i - 10}/10...",
+                    <= 30 => $"Processing data batch {i - 20}/10...",
+                    <= 40 => $"Validating results {i - 30}/10...",
+                    _ => $"Finalizing operation {i - 40}/10..."
+                };
+
+                await terminal.AddLine($"{colorCode}[{elapsed:F1}s]\x1B[0m {message}");
+                await Task.Delay(delay, streamingCts.Token);
+            }
+
+            if (!streamingCts.Token.IsCancellationRequested)
+            {
+                await terminal.AddLine("");
+                await terminal.AddLine("\x1B[1m\x1B[92m✅ Gradual output complete!\x1B[0m");
+                await terminal.AddLine($"\x1B[36m⏱️  Total time: {(DateTime.Now - startTime).TotalSeconds:F2}s\x1B[0m");
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected when stopped
+        }
+        finally
+        {
+            isStreaming = false;
+            streamingCts?.Dispose();
+            streamingCts = null;
+            StateHasChanged();
+        }
+    }
+
+    private void StopGradualOutput()
+    {
+        streamingCts?.Cancel();
+    }
+
+    private async Task SimulateBuildProcess()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m$ dotnet build\x1B[0m",
+                "\x1B[36mMicrosoft (R) Build Engine version 9.0.0+abc123\x1B[0m",
+                "\x1B[36mCopyright (C) Microsoft Corporation. All rights reserved.\x1B[0m",
+                "",
+                "  Determining projects to restore...",
+                "\x1B[32m  Restored\x1B[0m /src/MyProject/MyProject.csproj (in 247 ms).",
+                "  MyProject -> /src/MyProject/bin/Debug/net9.0/MyProject.dll",
+                "",
+                "\x1B[1m\x1B[92mBuild succeeded.\x1B[0m",
+                "    \x1B[32m0 Warning(s)\x1B[0m",
+                "    \x1B[32m0 Error(s)\x1B[0m",
+                "",
+                "Time Elapsed 00:00:03.47",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+
+    private async Task SimulateGitOperations()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m$ git status\x1B[0m",
+                "\x1B[32mOn branch main\x1B[0m",
+                "Your branch is up to date with 'origin/main'.",
+                "",
+                "Changes not staged for commit:",
+                "  (use \"git add <file>...\" to update what will be committed)",
+                "  (use \"git restore <file>...\" to discard changes in working directory)",
+                "\x1B[31m        modified:   src/Components/TerminalViewer.razor\x1B[0m",
+                "\x1B[31m        modified:   src/Pages/Demo.razor\x1B[0m",
+                "",
+                "Untracked files:",
+                "  (use \"git add <file>...\" to include in what will be committed)",
+                "\x1B[31m        docs/SCAVENGING_REPORT.md\x1B[0m",
+                "",
+                "\x1B[1m\x1B[36m$ git add .\x1B[0m",
+                "",
+                "\x1B[1m\x1B[36m$ git commit -m \"feat: add TerminalViewer component\"\x1B[0m",
+                "[main 7a3b9c2] feat: add TerminalViewer component",
+                " 3 files changed, 456 insertions(+), 12 deletions(-)",
+                " create mode 100644 docs/SCAVENGING_REPORT.md",
+                "",
+                "\x1B[1m\x1B[92m✓ Changes committed successfully\x1B[0m",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+
+    private async Task SimulateTestExecution()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m$ dotnet test\x1B[0m",
+                "  Determining projects to restore...",
+                "  All projects are up-to-date for restore.",
+                "  MyProject.Tests -> /src/MyProject.Tests/bin/Debug/net9.0/MyProject.Tests.dll",
+                "",
+                "Test run for /src/MyProject.Tests/bin/Debug/net9.0/MyProject.Tests.dll (.NETCoreApp,Version=v9.0)",
+                "Microsoft (R) Test Execution Command Line Tool Version 17.10.0",
+                "Copyright (c) Microsoft Corporation.  All rights reserved.",
+                "",
+                "Starting test execution, please wait...",
+                "A total of 1 test files matched the specified pattern.",
+                "",
+                "\x1B[32mPassed!\x1B[0m  - TerminalViewer_ParsesAnsiColors_Correctly",
+                "\x1B[32mPassed!\x1B[0m  - TerminalViewer_HandlesAutoScroll_Correctly",
+                "\x1B[32mPassed!\x1B[0m  - TerminalViewer_BuffersLines_WhenExceedingMax",
+                "\x1B[33mSkipped!\x1B[0m - TerminalViewer_FullScreen_Integration [Reason: Requires browser]",
+                "\x1B[32mPassed!\x1B[0m  - TerminalViewer_ClearsBuffer_OnCommand",
+                "",
+                "\x1B[1m\x1B[92mTest Run Successful.\x1B[0m",
+                "Total tests: 5",
+                "     \x1B[92mPassed: 4\x1B[0m",
+                "     \x1B[33mSkipped: 1\x1B[0m",
+                " Total time: 2.3471 Seconds",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+
+    private async Task SimulateDeployment()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m🚀 Starting deployment to production...\x1B[0m",
+                "",
+                "\x1B[36m[Step 1/5]\x1B[0m Running pre-deployment checks...",
+                "\x1B[32m  ✓ Environment variables validated\x1B[0m",
+                "\x1B[32m  ✓ Database connection successful\x1B[0m",
+                "\x1B[32m  ✓ Storage access confirmed\x1B[0m",
+                "",
+                "\x1B[36m[Step 2/5]\x1B[0m Building application...",
+                "\x1B[32m  ✓ Build completed successfully\x1B[0m",
+                "",
+                "\x1B[36m[Step 3/5]\x1B[0m Running migrations...",
+                "\x1B[32m  ✓ Applied 3 pending migrations\x1B[0m",
+                "",
+                "\x1B[36m[Step 4/5]\x1B[0m Uploading artifacts...",
+                "  → Uploading to production bucket...",
+                "\x1B[32m  ✓ 247 files uploaded (15.3 MB)\x1B[0m",
+                "",
+                "\x1B[36m[Step 5/5]\x1B[0m Restarting services...",
+                "  → Stopping old instances...",
+                "\x1B[32m  ✓ 3 instances stopped\x1B[0m",
+                "  → Starting new instances...",
+                "\x1B[32m  ✓ 3 instances started and healthy\x1B[0m",
+                "",
+                "\x1B[1m\x1B[92m✅ Deployment completed successfully!\x1B[0m",
+                "\x1B[36m📊 Deployment URL: https://myapp.example.com\x1B[0m",
+                "\x1B[36m⏱️  Total time: 4m 32s\x1B[0m",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+
+    private async Task SimulateDockerBuild()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m$ docker build -t myapp:latest .\x1B[0m",
+                "\x1B[34m[+] Building 23.5s (15/15) FINISHED\x1B[0m",
+                " => [internal] load build definition from Dockerfile",
+                " => => transferring dockerfile: 856B",
+                " => [internal] load .dockerignore",
+                " => => transferring context: 2B",
+                " => [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:9.0",
+                " => [internal] load metadata for mcr.microsoft.com/dotnet/sdk:9.0",
+                " => [base 1/2] FROM mcr.microsoft.com/dotnet/aspnet:9.0",
+                " => [build 1/6] FROM mcr.microsoft.com/dotnet/sdk:9.0",
+                " => [internal] load build context",
+                " => => transferring context: 1.24MB",
+                " => [build 2/6] WORKDIR /src",
+                " => [build 3/6] COPY [\"MyProject.csproj\", \"./\"]",
+                " => [build 4/6] RUN dotnet restore \"MyProject.csproj\"",
+                " => [build 5/6] COPY . .",
+                " => [build 6/6] RUN dotnet build \"MyProject.csproj\" -c Release -o /app/build",
+                " => [publish 1/1] RUN dotnet publish \"MyProject.csproj\" -c Release -o /app/publish",
+                " => [final 1/2] WORKDIR /app",
+                " => [final 2/2] COPY --from=publish /app/publish .",
+                " => exporting to image",
+                " => => exporting layers",
+                " => => writing image sha256:8f3a9b2c...",
+                " => => naming to docker.io/library/myapp:latest",
+                "",
+                "\x1B[1m\x1B[92m✓ Successfully built myapp:latest\x1B[0m",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+
+    private async Task SimulateErrorScenario()
+    {
+        if (terminal != null)
+        {
+            var logs = new[]
+            {
+                "",
+                "\x1B[1m\x1B[36m$ dotnet build\x1B[0m",
+                "Microsoft (R) Build Engine version 9.0.0",
+                "Copyright (C) Microsoft Corporation. All rights reserved.",
+                "",
+                "  Determining projects to restore...",
+                "  All projects are up-to-date for restore.",
+                "  MyProject -> /src/MyProject/bin/Debug/net9.0/MyProject.dll",
+                "\x1B[31mProgram.cs(42,15): error CS1061: 'string' does not contain a definition for 'DoSomethingWrong'\x1B[0m",
+                "\x1B[31mProgram.cs(43,15): error CS0103: The name 'undefinedVariable' does not exist in the current context\x1B[0m",
+                "\x1B[33mProgram.cs(15,9): warning CS0168: The variable 'unusedVar' is declared but never used\x1B[0m",
+                "",
+                "\x1B[1m\x1B[91mBuild FAILED.\x1B[0m",
+                "",
+                "    \x1B[33m1 Warning(s)\x1B[0m",
+                "    \x1B[31m2 Error(s)\x1B[0m",
+                "",
+                "Time Elapsed 00:00:02.15",
+                "",
+                "\x1B[31m❌ Build failed. Please fix the errors above.\x1B[0m",
+                ""
+            };
+            await terminal.AddLines(logs);
+        }
+    }
+}

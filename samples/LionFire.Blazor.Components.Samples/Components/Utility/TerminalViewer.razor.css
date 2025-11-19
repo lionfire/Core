@@ -1,0 +1,225 @@
+.terminal-container {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #d4d4d4;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.terminal-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    height: 100vh;
+    border-radius: 0;
+}
+
+.terminal-header {
+    background: #2d2d30;
+    border-bottom: 1px solid #444;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    border-radius: 8px 8px 0 0;
+}
+
+.terminal-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #cccccc;
+}
+
+.terminal-icon {
+    font-size: 12px;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.control-btn {
+    background: transparent;
+    border: 1px solid #555;
+    color: #cccccc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: #404040;
+    border-color: #666;
+}
+
+.control-btn:active {
+    background: #333;
+}
+
+.control-btn.active {
+    background: #404040;
+    border-color: #0dbc79;
+}
+
+.terminal-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #1e1e1e;
+    border-radius: 0 0 8px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #2d2d30;
+}
+
+.terminal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+    background: #2d2d30;
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+.terminal-output {
+    padding: 12px;
+    min-height: 100%;
+}
+
+.terminal-line {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    user-select: text;
+    position: relative;
+}
+
+.terminal-line:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.terminal-empty {
+    color: #666;
+    font-style: italic;
+}
+
+.prompt {
+    color: #4a9eff;
+    font-weight: bold;
+}
+
+/* ANSI Color Classes */
+.ansi-black { color: #000000; }
+.ansi-red { color: #cd3131; }
+.ansi-green { color: #0dbc79; }
+.ansi-yellow { color: #e5e510; }
+.ansi-blue { color: #2472c8; }
+.ansi-magenta { color: #bc3fbc; }
+.ansi-cyan { color: #11a8cd; }
+.ansi-white { color: #e5e5e5; }
+
+.ansi-bright-black { color: #666666; }
+.ansi-bright-red { color: #f14c4c; }
+.ansi-bright-green { color: #23d18b; }
+.ansi-bright-yellow { color: #f5f543; }
+.ansi-bright-blue { color: #3b8eea; }
+.ansi-bright-magenta { color: #d670d6; }
+.ansi-bright-cyan { color: #29b8db; }
+.ansi-bright-white { color: #ffffff; }
+
+.ansi-bold {
+    font-weight: bold;
+}
+
+/* Full screen overlay */
+.terminal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .terminal-container {
+        font-size: 12px;
+        height: 300px;
+    }
+
+    .control-btn {
+        padding: 2px 6px;
+        font-size: 11px;
+    }
+
+    .terminal-header {
+        padding: 6px 8px;
+    }
+}
+
+/* Selection styling */
+.terminal-line::selection {
+    background: #264f78;
+}
+
+.terminal-line::-moz-selection {
+    background: #264f78;
+}
+
+/* Icons for control buttons */
+.icon-scroll-on::before { content: "🔄"; }
+.icon-scroll-off::before { content: "⏸️"; }
+.icon-clear::before { content: "🗑️"; }
+.icon-fullscreen::before { content: "⛶"; }
+.icon-copy::before { content: "📋"; }
+.icon-rightclick-on::before { content: "👆"; }
+.icon-rightclick-off::before { content: "🚫"; }
+
+/* Animation for new lines */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.terminal-line:last-child {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Status indicators */
+.terminal-header.connected {
+    border-left: 4px solid #0dbc79;
+}
+
+.terminal-header.disconnected {
+    border-left: 4px solid #cd3131;
+}
+
+.terminal-header.connecting {
+    border-left: 4px solid #e5e510;
+}

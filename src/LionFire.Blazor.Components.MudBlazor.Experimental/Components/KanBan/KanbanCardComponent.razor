@@ -1,0 +1,190 @@
+<MudCard Class="kanban-card mb-2" Elevation="2">
+    <MudCardContent Class="pa-2">
+        <MudStack Spacing="1">
+            <!-- Card Header -->
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudChip T="string" Size="Size.Small" Color="@GetPriorityColor()" Label="true">
+                    @Card.Priority
+                </MudChip>
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small">
+                    <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="@(() => OnEdit.InvokeAsync(Card))">Edit</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="@(() => OnDelete.InvokeAsync(Card))">Delete</MudMenuItem>
+                    @if (Card.State == CardState.Available)
+                    {
+                        <MudMenuItem Icon="@Icons.Material.Filled.PersonAdd" OnClick="@(() => OnClaim.InvokeAsync(Card))">Claim</MudMenuItem>
+                    }
+                    @if (Card.State == CardState.Claimed || Card.State == CardState.InProgress)
+                    {
+                        <MudMenuItem Icon="@Icons.Material.Filled.PersonRemove" OnClick="@(() => OnRelease.InvokeAsync(Card))">Release</MudMenuItem>
+                    }
+                </MudMenu>
+            </MudStack>
+
+            <!-- Card Title -->
+            <MudText Typo="Typo.subtitle2" Class="card-title">@Card.Title</MudText>
+
+            <!-- Card Description (truncated) -->
+            @if (!string.IsNullOrEmpty(Card.Description))
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="card-description">
+                    @TruncateText(Card.Description, 100)
+                </MudText>
+            }
+
+            <!-- Progress Bar -->
+            @if (Card.PercentComplete > 0)
+            {
+                <MudProgressLinear Color="Color.Primary" Value="@Card.PercentComplete" Size="Size.Small" />
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@Card.PercentComplete% Complete</MudText>
+            }
+
+            <!-- Tags -->
+            @if (Card.Tags.Any())
+            {
+                <MudStack Row="true" Spacing="1">
+                    @foreach (var tag in Card.Tags.Take(3))
+                    {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Text">@tag</MudChip>
+                    }
+                    @if (Card.Tags.Count > 3)
+                    {
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Text">+@(Card.Tags.Count - 3)</MudChip>
+                    }
+                </MudStack>
+            }
+
+            <!-- Card Footer -->
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-2">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                    @if (!string.IsNullOrEmpty(Card.AssignedTo))
+                    {
+                        <MudTooltip Text="@($"Assigned to: {Card.AssignedTo}")">
+                            <MudAvatar Size="Size.Small" Color="Color.Primary">
+                                @Card.AssignedTo.Substring(0, 1).ToUpper()
+                            </MudAvatar>
+                        </MudTooltip>
+                    }
+                    @if (!string.IsNullOrEmpty(Card.ClaimedBy))
+                    {
+                        <MudTooltip Text="@($"Claimed by: {Card.ClaimedBy}")">
+                            <MudIcon Icon="@Icons.Material.Filled.SmartToy" Size="Size.Small" Color="Color.Info" />
+                        </MudTooltip>
+                    }
+                </MudStack>
+
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                    @if (Card.DueDate.HasValue)
+                    {
+                        <MudTooltip Text="@($"Due: {Card.DueDate.Value:MMM dd, yyyy}")">
+                            <MudIcon Icon="@Icons.Material.Filled.Schedule" Size="Size.Small" Color="@GetDueDateColor()" />
+                        </MudTooltip>
+                    }
+                    @if (Card.Comments.Any())
+                    {
+                        <MudTooltip Text="@($"{Card.Comments.Count} comments")">
+                            <MudBadge Content="@Card.Comments.Count" Color="Color.Secondary" Overlap="true">
+                                <MudIcon Icon="@Icons.Material.Filled.Comment" Size="Size.Small" />
+                            </MudBadge>
+                        </MudTooltip>
+                    }
+                    @if (Card.Attachments.Any())
+                    {
+                        <MudTooltip Text="@($"{Card.Attachments.Count} attachments")">
+                            <MudBadge Content="@Card.Attachments.Count" Color="Color.Secondary" Overlap="true">
+                                <MudIcon Icon="@Icons.Material.Filled.AttachFile" Size="Size.Small" />
+                            </MudBadge>
+                        </MudTooltip>
+                    }
+                </MudStack>
+            </MudStack>
+
+            <!-- State Badge -->
+            @if (Card.State != CardState.Available)
+            {
+                <MudChip T="string" Size="Size.Small" Color="@GetStateColor()" Label="true" Class="mt-1">
+                    @Card.State
+                </MudChip>
+            }
+        </MudStack>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter] public KanbanCard Card { get; set; } = null!;
+    [Parameter] public EventCallback<KanbanCard> OnEdit { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnDelete { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnClaim { get; set; }
+    [Parameter] public EventCallback<KanbanCard> OnRelease { get; set; }
+
+    private global::MudBlazor.Color GetPriorityColor()
+    {
+        return Card.Priority switch
+        {
+            Priority.Critical => global::MudBlazor.Color.Error,
+            Priority.High => global::MudBlazor.Color.Warning,
+            Priority.Medium => global::MudBlazor.Color.Info,
+            _ => global::MudBlazor.Color.Default
+        };
+    }
+
+    private global::MudBlazor.Color GetStateColor()
+    {
+        return Card.State switch
+        {
+            CardState.Claimed => global::MudBlazor.Color.Info,
+            CardState.InProgress => global::MudBlazor.Color.Primary,
+            CardState.Blocked => global::MudBlazor.Color.Error,
+            CardState.Complete => global::MudBlazor.Color.Success,
+            _ => global::MudBlazor.Color.Default
+        };
+    }
+
+    private global::MudBlazor.Color GetDueDateColor()
+    {
+        if (!Card.DueDate.HasValue) return global::MudBlazor.Color.Default;
+
+        var daysUntilDue = (Card.DueDate.Value - DateTime.Now).Days;
+        if (daysUntilDue < 0) return global::MudBlazor.Color.Error;
+        if (daysUntilDue <= 3) return global::MudBlazor.Color.Warning;
+        return global::MudBlazor.Color.Default;
+    }
+
+    private string TruncateText(string text, int maxLength)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+            return text;
+
+        return text.Substring(0, maxLength) + "...";
+    }
+}
+
+<style>
+    .kanban-card {
+        cursor: move;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kanban-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .kanban-card.dragging {
+        opacity: 0.5;
+        transform: rotate(2deg);
+    }
+
+    .card-title {
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .card-description {
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+</style>

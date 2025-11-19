@@ -1,0 +1,208 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@isValid" @bind-Errors="@errors">
+            <MudTextField @bind-Value="Board.Name"
+                         For="@(() => Board.Name)"
+                         Immediate="true"
+                         Label="Board Name"
+                         Required="true"
+                         RequiredError="Board name is required!"
+                         Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Board.Description"
+                         For="@(() => Board.Description)"
+                         Lines="3"
+                         Label="Description"
+                         Variant="Variant.Outlined"
+                         Class="mt-3"
+                         HelperText="Brief description of what this board is for" />
+
+            <MudSelect @bind-Value="Board.Theme"
+                      For="@(() => Board.Theme)"
+                      Label="Theme"
+                      Variant="Variant.Outlined"
+                      Class="mt-3">
+                <MudSelectItem Value="@("default")">Default</MudSelectItem>
+                <MudSelectItem Value="@("dark")">Dark</MudSelectItem>
+                <MudSelectItem Value="@("light")">Light</MudSelectItem>
+                <MudSelectItem Value="@("colorful")">Colorful</MudSelectItem>
+            </MudSelect>
+
+            <MudTooltip Text="Inactive boards are hidden from the main view">
+                <MudCheckBox @bind-Value="Board.IsActive"
+                            Label="Active"
+                            Class="mt-3" />
+            </MudTooltip>
+
+            @if (IsEdit)
+            {
+                <MudTooltip Text="Archived boards are read-only and hidden from active work">
+                    <MudCheckBox @bind-Value="Board.IsArchived"
+                                Label="Archived"
+                                Class="mt-3" />
+                </MudTooltip>
+            }
+
+            <MudExpansionPanels Class="mt-3">
+                <MudExpansionPanel MaxHeight="500" Text="Advanced Settings (JSON)">
+                    <MudTextField @bind-Value="settingsJson"
+                                 For="@(() => settingsJson)"
+                                 Lines="6"
+                                 Label="Settings JSON"
+                                 Variant="Variant.Outlined"
+                                 HelperText="Advanced board configuration in JSON format"
+                                 Placeholder='{"autoAssignment": true, "defaultWipLimit": 5}' />
+                    @if (!string.IsNullOrEmpty(settingsValidationError))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-2">
+                            @settingsValidationError
+                        </MudAlert>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            @if (IsEdit)
+            {
+                <MudGrid Class="mt-4">
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            Created: @Board.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                        </MudText>
+                        @if (!string.IsNullOrEmpty(Board.CreatedBy))
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                By: @Board.CreatedBy
+                            </MudText>
+                        }
+                    </MudItem>
+                    <MudItem xs="6">
+                        @if (Board.UpdatedAt.HasValue)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                Updated: @Board.UpdatedAt.Value.ToString("yyyy-MM-dd HH:mm")
+                            </MudText>
+                            @if (!string.IsNullOrEmpty(Board.UpdatedBy))
+                            {
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    By: @Board.UpdatedBy
+                                </MudText>
+                            }
+                        }
+                    </MudItem>
+                </MudGrid>
+
+                @if (Board.Columns?.Any() == true)
+                {
+                    <MudDivider Class="my-4" />
+                    <MudText Typo="Typo.h6" Class="mb-2">Board Statistics</MudText>
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudPaper Class="pa-3 text-center">
+                                <MudText Typo="Typo.h6" Color="Color.Primary">@Board.Columns.Count</MudText>
+                                <MudText Typo="Typo.body2">Columns</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudPaper Class="pa-3 text-center">
+                                <MudText Typo="Typo.h6" Color="Color.Secondary">@totalCards</MudText>
+                                <MudText Typo="Typo.body2">Total Cards</MudText>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudPaper Class="pa-3 text-center">
+                                <MudText Typo="Typo.h6" Color="Color.Success">@approvedColumns</MudText>
+                                <MudText Typo="Typo.body2">Approved Columns</MudText>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                }
+            }
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@(!isValid)"
+                   Variant="Variant.Filled">
+            @(IsEdit ? "Update" : "Create")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public global::MudBlazor.IMudDialogInstance? MudDialog { get; set; }
+    [Parameter] public KanbanBoard Board { get; set; } = new();
+    [Parameter] public bool IsEdit { get; set; }
+
+    private MudForm form = null!;
+    private bool isValid;
+    private string[] errors = { };
+    private string settingsJson = string.Empty;
+    private string settingsValidationError = string.Empty;
+    private int totalCards;
+    private int approvedColumns;
+
+    protected override void OnInitialized()
+    {
+        settingsJson = Board.SettingsJson ?? string.Empty;
+
+        if (IsEdit && Board.Columns?.Any() == true)
+        {
+            totalCards = Board.Columns.SelectMany(c => c.Cards).Count();
+            approvedColumns = Board.Columns.Count(c => c.GreenlightStatus == GreenlightStatus.Approved);
+        }
+    }
+
+    private void Submit()
+    {
+        // Validate JSON settings if provided
+        if (!string.IsNullOrWhiteSpace(settingsJson))
+        {
+            try
+            {
+                System.Text.Json.JsonSerializer.Deserialize<object>(settingsJson);
+                settingsValidationError = string.Empty;
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                settingsValidationError = $"Invalid JSON: {ex.Message}";
+                return;
+            }
+        }
+
+        if (isValid)
+        {
+            // Update settings JSON
+            Board.SettingsJson = string.IsNullOrWhiteSpace(settingsJson) ? null : settingsJson;
+
+            // Generate ID for new boards
+            if (!IsEdit && Board.Id == Guid.Empty)
+            {
+                Board.Id = Guid.NewGuid();
+            }
+
+            // Set timestamps and user info
+            if (!IsEdit)
+            {
+                Board.CreatedAt = DateTime.UtcNow;
+                Board.CreatedBy = "current-user"; // TODO: Get from auth context
+            }
+            else
+            {
+                Board.UpdatedAt = DateTime.UtcNow;
+                Board.UpdatedBy = "current-user"; // TODO: Get from auth context
+            }
+
+            // Ensure default theme is set
+            if (string.IsNullOrEmpty(Board.Theme))
+            {
+                Board.Theme = "default";
+            }
+
+            MudDialog.Close(DialogResult.Ok(Board));
+        }
+    }
+
+    private void Cancel() => MudDialog.Close(DialogResult.Cancel());
+}

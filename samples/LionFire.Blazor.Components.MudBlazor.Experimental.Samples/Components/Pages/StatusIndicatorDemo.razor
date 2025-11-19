@@ -1,0 +1,358 @@
+@page "/status-indicator-demo"
+@using LionFire.Blazor.Components.MudBlazor_.Experimental
+@using static LionFire.Blazor.Components.MudBlazor_.Experimental.StatusIndicator
+
+<PageTitle>Status Indicator Demo</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Status Indicator Demo</MudText>
+<MudText Class="mb-8">Demonstrates a flexible status indicator component for projects and tasks.</MudText>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Project Status Indicators</MudText>
+    <MudText Class="mb-4">Shows different project statuses with icons and optional labels.</MudText>
+
+    <MudSimpleTable Dense="true">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Small</th>
+                <th>Medium</th>
+                <th>Large</th>
+                <th>With Label</th>
+                <th>Pulsating</th>
+                <th>Animated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><MudText Typo="Typo.body2">Active</MudText></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" Size="small" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" Size="medium" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" Size="large" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Active" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Warning</MudText></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" Size="small" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" Size="medium" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" Size="large" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Warning" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Error</MudText></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" Size="small" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" Size="medium" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" Size="large" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Error" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Idle</MudText></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" Size="small" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" Size="medium" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" Size="large" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Idle" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Completed</MudText></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" Size="small" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" Size="medium" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" Size="large" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="UserProjectStatus.Completed" Animated="true" ShowLabel="true" /></td>
+            </tr>
+        </tbody>
+    </MudSimpleTable>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Task State Indicators</MudText>
+    <MudText Class="mb-4">Shows different task workflow states.</MudText>
+
+    <MudSimpleTable Dense="true">
+        <thead>
+            <tr>
+                <th>State</th>
+                <th>Small</th>
+                <th>Medium</th>
+                <th>Large</th>
+                <th>With Label</th>
+                <th>Pulsating</th>
+                <th>Animated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><MudText Typo="Typo.body2">Ready</MudText></td>
+                <td><StatusIndicator Status="TaskState.Ready" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Ready" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Ready" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Ready" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Ready" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Ready" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Running</MudText></td>
+                <td><StatusIndicator Status="TaskState.Running" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Running" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Running" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Running" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Running" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Running" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Active</MudText></td>
+                <td><StatusIndicator Status="TaskState.Active" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Active" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Active" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Active" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Active" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Active" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Waiting</MudText></td>
+                <td><StatusIndicator Status="TaskState.Waiting" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Waiting" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Waiting" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Waiting" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Waiting" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Waiting" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Blocked</MudText></td>
+                <td><StatusIndicator Status="TaskState.Blocked" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Blocked" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Blocked" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Blocked" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Blocked" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Blocked" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Closed</MudText></td>
+                <td><StatusIndicator Status="TaskState.Closed" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Closed" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Closed" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Closed" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Closed" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Closed" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Deferred</MudText></td>
+                <td><StatusIndicator Status="TaskState.Deferred" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Deferred" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Deferred" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Deferred" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Deferred" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Deferred" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Deferred (Blocked)</MudText></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.DeferredBecauseBlocked" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Backburner</MudText></td>
+                <td><StatusIndicator Status="TaskState.Backburner" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Backburner" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Backburner" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Backburner" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Backburner" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Backburner" Animated="true" ShowLabel="true" /></td>
+            </tr>
+            <tr>
+                <td><MudText Typo="Typo.body2">Reviewable</MudText></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" Size="small" /></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" Size="medium" /></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" Size="large" /></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" Pulsating="true" ShowLabel="true" /></td>
+                <td><StatusIndicator Status="TaskState.Reviewable" Animated="true" ShowLabel="true" /></td>
+            </tr>
+        </tbody>
+    </MudSimpleTable>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Animation Showcase</MudText>
+    <MudText Class="mb-4">Compare subtle pulsating vs dramatic animated effects.</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudText Typo="Typo.h6" GutterBottom="true">Pulsating (Subtle)</MudText>
+                <MudStack Spacing="3">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="UserProjectStatus.Active" Pulsating="true" Size="large" />
+                        <MudText>Active - Gentle pulse</MudText>
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="TaskState.Running" Pulsating="true" Size="large" />
+                        <MudText>Running - Gentle pulse</MudText>
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="UserProjectStatus.Warning" Pulsating="true" Size="large" />
+                        <MudText>Warning - Gentle pulse</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudText Typo="Typo.h6" GutterBottom="true">Animated (Dramatic)</MudText>
+                <MudStack Spacing="3">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="UserProjectStatus.Active" Animated="true" Size="large" />
+                        <MudText>Active - Spinning</MudText>
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="TaskState.Running" Animated="true" Size="large" />
+                        <MudText>Running - Spinning</MudText>
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <StatusIndicator Status="UserProjectStatus.Warning" Animated="true" Size="large" />
+                        <MudText>Warning - Flashing</MudText>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Dramatic Animations Gallery</MudText>
+    <MudText Class="mb-4">Each status has a unique, meaningful animation.</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Error" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Shake (Urgent)</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Completed" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Bounce (Success)</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="TaskState.Waiting" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Swing (Waiting)</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Idle" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Float (Dormant)</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="TaskState.Reviewable" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Glow Pulse</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="TaskState.Backburner" Animated="true" Size="large" ShowLabel="true" />
+                <MudText Typo="Typo.caption">Smolder (Low Priority)</MudText>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Interactive Example</MudText>
+    <MudText Class="mb-4">Click to cycle through different statuses.</MudText>
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="4">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="CycleProjectStatus">
+            Cycle Project Status
+        </MudButton>
+        <StatusIndicator Status="@currentProjectStatus" Size="large" ShowLabel="true" Animated="true" />
+    </MudStack>
+
+    <MudDivider Class="my-4" />
+
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="4">
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="CycleTaskState">
+            Cycle Task State
+        </MudButton>
+        <StatusIndicator Status="@currentTaskState" Size="large" ShowLabel="true" Animated="true" />
+    </MudStack>
+</MudPaper>
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Usage Example</MudText>
+    <MudText Typo="Typo.body2" Class="mb-2">Real-world usage in a project list:</MudText>
+
+    <MudList T="string" Dense="true">
+        <MudListItem T="string">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Active" ShowLabel="true" />
+                <MudText>E-Commerce Platform</MudText>
+            </MudStack>
+        </MudListItem>
+        <MudListItem T="string">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Warning" ShowLabel="true" />
+                <MudText>Mobile App Redesign</MudText>
+            </MudStack>
+        </MudListItem>
+        <MudListItem T="string">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <StatusIndicator Status="UserProjectStatus.Completed" ShowLabel="true" />
+                <MudText>API Documentation</MudText>
+            </MudStack>
+        </MudListItem>
+    </MudList>
+</MudPaper>
+
+@code {
+    private UserProjectStatus currentProjectStatus = UserProjectStatus.Active;
+    private TaskState currentTaskState = TaskState.Ready;
+
+    private void CycleProjectStatus()
+    {
+        currentProjectStatus = currentProjectStatus switch
+        {
+            UserProjectStatus.Active => UserProjectStatus.Warning,
+            UserProjectStatus.Warning => UserProjectStatus.Error,
+            UserProjectStatus.Error => UserProjectStatus.Idle,
+            UserProjectStatus.Idle => UserProjectStatus.Completed,
+            UserProjectStatus.Completed => UserProjectStatus.Active,
+            _ => UserProjectStatus.Active
+        };
+    }
+
+    private void CycleTaskState()
+    {
+        currentTaskState = currentTaskState switch
+        {
+            TaskState.Ready => TaskState.Running,
+            TaskState.Running => TaskState.Active,
+            TaskState.Active => TaskState.Waiting,
+            TaskState.Waiting => TaskState.Blocked,
+            TaskState.Blocked => TaskState.Closed,
+            TaskState.Closed => TaskState.Deferred,
+            TaskState.Deferred => TaskState.DeferredBecauseBlocked,
+            TaskState.DeferredBecauseBlocked => TaskState.Backburner,
+            TaskState.Backburner => TaskState.Reviewable,
+            TaskState.Reviewable => TaskState.Ready,
+            _ => TaskState.Ready
+        };
+    }
+}

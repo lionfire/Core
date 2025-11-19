@@ -1,0 +1,336 @@
+@namespace LionFire.Blazor.Components.MudBlazor_.Experimental
+
+<span class="status-indicator status-@Status.ToString().ToLower() @(Size) @(Pulsating ? "pulsating" : "") @(Animated ? "animated" : "")"
+      title="@GetStatusDescription()">
+    <span class="status-dot">@GetStatusIcon()</span>
+    @if (ShowLabel)
+    {
+        <span class="status-label">@Status.ToString()</span>
+    }
+</span>
+
+@code {
+    [Parameter] public object Status { get; set; } = null!;
+    [Parameter] public string Size { get; set; } = "medium";
+    [Parameter] public bool Pulsating { get; set; } = false;
+    [Parameter] public bool Animated { get; set; } = false;
+    [Parameter] public bool ShowLabel { get; set; } = false;
+
+    private string GetStatusIcon()
+    {
+        return Status switch
+        {
+            UserProjectStatus.Active => "🟢",
+            UserProjectStatus.Warning => "🟡",
+            UserProjectStatus.Error => "🔴",
+            UserProjectStatus.Idle => "⚪",
+            UserProjectStatus.Completed => "✅",
+            TaskState.Ready => "⚪",
+            TaskState.Running => "🟡",
+            TaskState.Active => "🔵",
+            TaskState.Waiting => "⏳",
+            TaskState.Blocked => "🔴",
+            TaskState.Closed => "✅",
+            TaskState.Deferred => "⏸️",
+            TaskState.DeferredBecauseBlocked => "⏸️",
+            TaskState.Backburner => "📚",
+            TaskState.Reviewable => "👀",
+            _ => "⚫"
+        };
+    }
+
+    private string GetStatusDescription()
+    {
+        return Status switch
+        {
+            UserProjectStatus.Active => "Active - Project is running normally",
+            UserProjectStatus.Warning => "Warning - Project needs attention",
+            UserProjectStatus.Error => "Error - Project has issues",
+            UserProjectStatus.Idle => "Idle - Project is inactive",
+            UserProjectStatus.Completed => "Completed - Project is complete",
+            TaskState.Ready => "Ready - Task is ready to be assigned",
+            TaskState.Running => "Running - Agent is actively working on this task",
+            TaskState.Active => "Active - Task is assigned to user",
+            TaskState.Waiting => "Waiting - Task is waiting on dependencies",
+            TaskState.Blocked => "Blocked - Task is blocked and needs resolution",
+            TaskState.Closed => "Closed - Task is completed",
+            TaskState.Deferred => "Deferred - Task has been postponed",
+            TaskState.DeferredBecauseBlocked => "Deferred - Task postponed due to blocking issues",
+            TaskState.Backburner => "Backburner - Task is low priority",
+            TaskState.Reviewable => "Reviewable - Task is ready for review",
+            _ => "Unknown status"
+        };
+    }
+
+    /// <summary>
+    /// Project status based on task analysis
+    /// </summary>
+    public enum UserProjectStatus
+    {
+        Unknown,
+        Active,      // Has running or active tasks
+        Warning,     // Has issues or overdue tasks
+        Error,       // Has failed tasks or critical issues
+        Idle,        // No recent activity
+        Completed    // All tasks completed
+    }
+
+    /// <summary>
+    /// Task state for workflow tracking
+    /// </summary>
+    public enum TaskState
+    {
+        Ready,
+        Running,
+        Active,
+        Waiting,
+        Blocked,
+        Closed,
+        Deferred,
+        DeferredBecauseBlocked,
+        Backburner,
+        Reviewable
+    }
+}
+
+<style>
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .status-indicator.small {
+        font-size: 10px;
+    }
+
+    .status-indicator.medium {
+        font-size: 12px;
+    }
+
+    .status-indicator.large {
+        font-size: 14px;
+    }
+
+    .status-dot {
+        display: inline-block;
+        line-height: 1;
+    }
+
+    /* Subtle pulsating animation */
+    .status-indicator.pulsating .status-dot {
+        animation: pulse 2s infinite;
+    }
+
+    /* Dramatic status-specific animations */
+    .status-indicator.animated.status-active .status-dot,
+    .status-indicator.animated.status-running .status-dot {
+        animation: spin 2s linear infinite;
+    }
+
+    .status-indicator.animated.status-warning .status-dot {
+        animation: flash-warning 1.5s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-error .status-dot,
+    .status-indicator.animated.status-blocked .status-dot {
+        animation: shake-error 0.5s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-idle .status-dot {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-completed .status-dot,
+    .status-indicator.animated.status-closed .status-dot {
+        animation: bounce-success 2s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-ready .status-dot {
+        animation: gentle-bounce 1.5s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-waiting .status-dot {
+        animation: swing 2s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-deferred .status-dot,
+    .status-indicator.animated.status-deferredbecauseblocked .status-dot {
+        animation: breathe 3s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-backburner .status-dot {
+        animation: smolder 4s ease-in-out infinite;
+    }
+
+    .status-indicator.animated.status-reviewable .status-dot {
+        animation: glow-pulse 2s ease-in-out infinite;
+    }
+
+    .status-label {
+        font-size: 0.85em;
+        color: var(--text-secondary);
+        text-transform: capitalize;
+    }
+
+    .status-ready .status-label,
+    .status-idle .status-label {
+        color: #969696;
+    }
+
+    .status-running .status-label {
+        color: #ffcc00;
+    }
+
+    .status-active .status-label {
+        color: #007acc;
+    }
+
+    .status-warning .status-label {
+        color: #ffcc00;
+    }
+
+    .status-error .status-label,
+    .status-blocked .status-label {
+        color: #f44747;
+    }
+
+    .status-closed .status-label,
+    .status-completed .status-label {
+        color: #89d185;
+    }
+
+    /* Subtle pulse animation */
+    @@keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.6;
+            transform: scale(0.9);
+        }
+    }
+
+    /* Dramatic animations for each status type */
+
+    /* Active/Running: Fast spinning work */
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Warning: Flash attention */
+    @@keyframes flash-warning {
+        0%, 50%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        25%, 75% {
+            opacity: 0.4;
+            transform: scale(1.2);
+        }
+    }
+
+    /* Error/Blocked: Shake urgently */
+    @@keyframes shake-error {
+        0%, 100% {
+            transform: translateX(0) rotate(0deg);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-3px) rotate(-5deg);
+        }
+        20%, 40%, 60%, 80% {
+            transform: translateX(3px) rotate(5deg);
+        }
+    }
+
+    /* Idle: Gentle floating */
+    @@keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+            opacity: 0.8;
+        }
+        50% {
+            transform: translateY(-8px);
+            opacity: 1;
+        }
+    }
+
+    /* Completed/Closed: Celebratory bounce */
+    @@keyframes bounce-success {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateY(0) scale(1);
+        }
+        40% {
+            transform: translateY(-12px) scale(1.1);
+        }
+        60% {
+            transform: translateY(-6px) scale(1.05);
+        }
+    }
+
+    /* Ready: Gentle anticipatory bounce */
+    @@keyframes gentle-bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-4px);
+        }
+    }
+
+    /* Waiting: Pendulum swing */
+    @@keyframes swing {
+        0%, 100% {
+            transform: rotate(0deg);
+        }
+        25% {
+            transform: rotate(15deg);
+        }
+        75% {
+            transform: rotate(-15deg);
+        }
+    }
+
+    /* Deferred: Breathing fade */
+    @@keyframes breathe {
+        0%, 100% {
+            opacity: 0.4;
+            transform: scale(0.95);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+    }
+
+    /* Backburner: Slow smolder */
+    @@keyframes smolder {
+        0%, 100% {
+            opacity: 0.3;
+            filter: brightness(0.7);
+        }
+        50% {
+            opacity: 0.6;
+            filter: brightness(1);
+        }
+    }
+
+    /* Reviewable: Pulsing glow */
+    @@keyframes glow-pulse {
+        0%, 100% {
+            transform: scale(1);
+            filter: brightness(1) drop-shadow(0 0 0 transparent);
+        }
+        50% {
+            transform: scale(1.15);
+            filter: brightness(1.3) drop-shadow(0 0 4px currentColor);
+        }
+    }
+</style>

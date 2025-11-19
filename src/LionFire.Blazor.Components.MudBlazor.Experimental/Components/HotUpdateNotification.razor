@@ -1,0 +1,162 @@
+@namespace LionFire.Blazor.Components.MudBlazor_.Experimental
+
+@if (Visible)
+{
+    <div class="hot-update-notification">
+        <div class="notification-content">
+            <span class="notification-icon">@Icon</span>
+            <span class="notification-text">@Message</span>
+            @if (ShowRestartButton)
+            {
+                <button class="restart-button" @onclick="HandleRestart" disabled="@IsProcessing">
+                    @if (IsProcessing)
+                    {
+                        <span>@ProcessingText</span>
+                    }
+                    else
+                    {
+                        <span>@RestartButtonText</span>
+                    }
+                </button>
+            }
+            @if (ShowDismissButton)
+            {
+                <button class="dismiss-button" @onclick="HandleDismiss" disabled="@IsProcessing">×</button>
+            }
+        </div>
+        @if (ShowDetails && !string.IsNullOrWhiteSpace(DetailsMessage))
+        {
+            <div class="notification-details">
+                <small>@DetailsMessage</small>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; } = false;
+    [Parameter] public string Icon { get; set; } = "⚠️";
+    [Parameter] public string Message { get; set; } = "Update available";
+    [Parameter] public string RestartButtonText { get; set; } = "Restart";
+    [Parameter] public string ProcessingText { get; set; } = "Restarting...";
+    [Parameter] public string DetailsMessage { get; set; } = "";
+    [Parameter] public bool ShowDetails { get; set; } = false;
+    [Parameter] public bool ShowRestartButton { get; set; } = true;
+    [Parameter] public bool ShowDismissButton { get; set; } = true;
+    [Parameter] public bool IsProcessing { get; set; } = false;
+
+    [Parameter] public EventCallback OnRestart { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+
+    private async Task HandleRestart()
+    {
+        if (OnRestart.HasDelegate)
+        {
+            await OnRestart.InvokeAsync();
+        }
+    }
+
+    private async Task HandleDismiss()
+    {
+        if (OnDismiss.HasDelegate)
+        {
+            await OnDismiss.InvokeAsync();
+        }
+    }
+}
+
+<style>
+    .hot-update-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+        z-index: 1400;
+        animation: slideIn 0.3s ease-out;
+        min-width: 300px;
+    }
+
+    @@keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .notification-icon {
+        font-size: 20px;
+    }
+
+    .notification-text {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    .restart-button {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .restart-button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-1px);
+    }
+
+    .restart-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .dismiss-button {
+        background: transparent;
+        color: white;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+
+    .dismiss-button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .dismiss-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .notification-details {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        font-size: 14px;
+        opacity: 0.9;
+    }
+</style>

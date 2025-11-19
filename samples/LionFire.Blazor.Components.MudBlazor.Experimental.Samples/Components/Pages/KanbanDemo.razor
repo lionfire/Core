@@ -1,0 +1,692 @@
+@page "/kanban-demo"
+@using LionFire.Blazor.Components.MudBlazor_.Experimental.Models
+@using LionFire.Blazor.Components.MudBlazor_.Experimental.Components.KanBan
+@using global::MudBlazor
+@rendermode InteractiveServer
+
+<PageTitle>Kanban Demo</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+    <!-- Header Section -->
+    <MudPaper Class="pa-4 mb-4">
+        <MudStack Spacing="2">
+            <MudText Typo="Typo.h3">Kanban Board Demo</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">
+                Interactive Kanban board demonstration with drag-and-drop support, board/card/column management dialogs, and greenlight status indicators.
+            </MudText>
+
+            <!-- Control Buttons -->
+            <MudStack Row="true" Spacing="2" Class="mt-2">
+                <MudButton Variant="Variant.Filled"
+                          Color="Color.Primary"
+                          StartIcon="@Icons.Material.Filled.Dashboard"
+                          OnClick="@OpenBoardDialog">
+                    Board Settings
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                          Color="Color.Success"
+                          StartIcon="@Icons.Material.Filled.Add"
+                          OnClick="@OpenAddCardDialog">
+                    Add Card
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                          Color="Color.Info"
+                          StartIcon="@Icons.Material.Filled.ViewWeek"
+                          OnClick="@OpenAddColumnDialog">
+                    Add Column
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                          Color="Color.Default"
+                          StartIcon="@Icons.Material.Filled.Refresh"
+                          OnClick="@ResetBoard">
+                    Reset Demo
+                </MudButton>
+            </MudStack>
+
+            <!-- Board Statistics -->
+            <MudGrid Class="mt-3">
+                <MudItem xs="3">
+                    <MudPaper Class="pa-3 text-center">
+                        <MudText Typo="Typo.h6" Color="Color.Primary">@board.Columns.Count</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Columns</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudPaper Class="pa-3 text-center">
+                        <MudText Typo="Typo.h6" Color="Color.Secondary">@board.Columns.SelectMany(c => c.Cards).Count()</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Total Cards</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudPaper Class="pa-3 text-center">
+                        <MudText Typo="Typo.h6" Color="Color.Success">@board.Columns.Count(c => c.GreenlightStatus == GreenlightStatus.Approved)</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Approved</MudText>
+                    </MudPaper>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudPaper Class="pa-3 text-center">
+                        <MudText Typo="Typo.h6" Color="Color.Info">@board.IsActive</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Status</MudText>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudStack>
+    </MudPaper>
+
+    <!-- Kanban Board -->
+    <MudPaper Class="kanban-board-wrapper pa-3" Elevation="0">
+        <MudDropContainer T="KanbanCard"
+                         Items="allCards"
+                         ItemsSelector="@((item, dropzone) => item.ColumnId.ToString() == dropzone)"
+                         ItemDropped="@CardDropped"
+                         Class="d-flex gap-3 align-items-start kanban-scroll">
+            <ChildContent>
+                @foreach (var column in board.Columns.OrderBy(c => c.Position))
+                {
+                    <MudPaper Class="kanban-column pa-2" Style="min-width: 300px; max-width: 350px;">
+                        <!-- Column Header -->
+                        <MudPaper Class="column-header pa-3 mb-2" Style="@GetColumnHeaderStyle(column)" Elevation="0">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.h6">@column.Name</MudText>
+                                <MudStack Row="true" Spacing="1">
+                                    <MudTooltip Text="@GetGreenlightTooltip(column.GreenlightStatus)">
+                                        <MudIcon Icon="@GetGreenlightIcon(column.GreenlightStatus)" Color="@GetGreenlightIconColor(column.GreenlightStatus)" Size="Size.Small" />
+                                    </MudTooltip>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="@(() => OpenAddCardDialogForColumn(column))" />
+                                </MudStack>
+                            </MudStack>
+                        </MudPaper>
+
+                        <!-- Drop Zone for this column -->
+                        <MudDropZone T="KanbanCard"
+                                    Identifier="@column.Id.ToString()"
+                                    Class="pa-2 drop-zone"
+                                    Style="min-height: 400px;"
+                                    CanDropClass="can-drop-highlight"
+                                    NoDropClass="no-drop-highlight" />
+                    </MudPaper>
+                }
+            </ChildContent>
+            <ItemRenderer>
+                <KanbanCardComponent Card="@context"
+                                   OnEdit="@((card) => OpenEditCardDialog(card))"
+                                   OnDelete="@((card) => DeleteCard(card))"
+                                   OnClaim="@((card) => ClaimCard(card))"
+                                   OnRelease="@((card) => ReleaseCard(card))" />
+            </ItemRenderer>
+        </MudDropContainer>
+    </MudPaper>
+
+    <!-- Activity Log -->
+    <MudPaper Class="pa-4 mt-4">
+        <MudText Typo="Typo.h6" Class="mb-3">Activity Log</MudText>
+        <MudList T="string" Class="activity-log">
+            @if (activityLog.Count == 0)
+            {
+                <MudListItem T="string">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">No activities yet. Start interacting with cards and columns!</MudText>
+                </MudListItem>
+            }
+            else
+            {
+                @foreach (var activity in activityLog.TakeLast(10).Reverse())
+                {
+                    <MudListItem T="string">
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@activity.Icon" Size="Size.Small" Color="@activity.Color" />
+                            <MudText Typo="Typo.body2">@activity.Message</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@activity.Timestamp.ToString("HH:mm:ss")</MudText>
+                        </MudStack>
+                    </MudListItem>
+                }
+            }
+        </MudList>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private IDialogService DialogService { get; set; } = null!;
+
+    private KanbanBoard board = new();
+    private List<KanbanCard> allCards = new();
+    private List<ActivityLogEntry> activityLog = new();
+
+    [Inject]
+    private IDialogService Dialogs { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        DialogService = Dialogs;
+        InitializeBoard();
+    }
+
+    private void InitializeBoard()
+    {
+        board = new KanbanBoard
+        {
+            Id = Guid.NewGuid(),
+            Name = "Demo Kanban Board",
+            Description = "Interactive demonstration of kanban board features",
+            CreatedAt = DateTime.Now,
+            CreatedBy = "System",
+            IsActive = true,
+            Theme = "default",
+            Columns = new List<KanbanColumn>()
+        };
+
+        // Create columns
+        var todoColumn = new KanbanColumn
+        {
+            Id = Guid.NewGuid(),
+            BoardId = board.Id,
+            Name = "To Do",
+            Description = "Tasks ready to be started",
+            Position = 1,
+            Color = "#FF6B6B",
+            GreenlightStatus = GreenlightStatus.Approved,
+            Type = ColumnType.Status,
+            IsVisible = true,
+            WipLimit = 10,
+            CreatedAt = DateTime.Now
+        };
+
+        var inProgressColumn = new KanbanColumn
+        {
+            Id = Guid.NewGuid(),
+            BoardId = board.Id,
+            Name = "In Progress",
+            Description = "Tasks currently being worked on",
+            Position = 2,
+            Color = "#4ECDC4",
+            GreenlightStatus = GreenlightStatus.Approved,
+            Type = ColumnType.Status,
+            IsVisible = true,
+            WipLimit = 5,
+            CreatedAt = DateTime.Now
+        };
+
+        var reviewColumn = new KanbanColumn
+        {
+            Id = Guid.NewGuid(),
+            BoardId = board.Id,
+            Name = "Review",
+            Description = "Tasks awaiting review",
+            Position = 3,
+            Color = "#FFD93D",
+            GreenlightStatus = GreenlightStatus.Conditional,
+            GreenlightReason = "Review requires human approval",
+            Type = ColumnType.Status,
+            IsVisible = true,
+            WipLimit = 3,
+            CreatedAt = DateTime.Now
+        };
+
+        var doneColumn = new KanbanColumn
+        {
+            Id = Guid.NewGuid(),
+            BoardId = board.Id,
+            Name = "Done",
+            Description = "Completed tasks",
+            Position = 4,
+            Color = "#6BCB77",
+            GreenlightStatus = GreenlightStatus.NotApproved,
+            GreenlightReason = "Archive status - no new work allowed",
+            Type = ColumnType.Status,
+            IsVisible = true,
+            CreatedAt = DateTime.Now
+        };
+
+        board.Columns.Add(todoColumn);
+        board.Columns.Add(inProgressColumn);
+        board.Columns.Add(reviewColumn);
+        board.Columns.Add(doneColumn);
+
+        // Create sample cards
+        var sampleCards = new[]
+        {
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = todoColumn.Id,
+                Title = "Setup project structure",
+                Description = "Initialize the project with proper folder structure and dependencies",
+                Priority = Priority.High,
+                State = CardState.Available,
+                Position = 1,
+                Tags = new List<string> { "setup", "infrastructure" },
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = todoColumn.Id,
+                Title = "Design database schema",
+                Description = "Create the initial database design for the application",
+                Priority = Priority.High,
+                State = CardState.Available,
+                Position = 2,
+                Tags = new List<string> { "database", "design" },
+                DueDate = DateTime.Now.AddDays(3),
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = todoColumn.Id,
+                Title = "Create API endpoints",
+                Description = "Implement RESTful API endpoints for core functionality",
+                Priority = Priority.Medium,
+                State = CardState.Available,
+                Position = 3,
+                Tags = new List<string> { "api", "backend" },
+                EstimatedHours = 16,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = inProgressColumn.Id,
+                Title = "Implement authentication",
+                Description = "Add JWT-based authentication and authorization",
+                Priority = Priority.Critical,
+                State = CardState.InProgress,
+                Position = 1,
+                Tags = new List<string> { "auth", "security" },
+                AssignedTo = "Alice",
+                PercentComplete = 60,
+                CurrentStep = "Testing token generation and validation",
+                DueDate = DateTime.Now.AddDays(1),
+                EstimatedHours = 12,
+                ActualHours = 8,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = inProgressColumn.Id,
+                Title = "Build Kanban board UI",
+                Description = "Create interactive drag-and-drop kanban board component",
+                Priority = Priority.High,
+                State = CardState.Claimed,
+                ClaimedBy = "AgentBot-001",
+                ClaimedAt = DateTime.Now.AddHours(-2),
+                Position = 2,
+                Tags = new List<string> { "ui", "frontend", "interactive" },
+                PercentComplete = 45,
+                CurrentStep = "Implementing drop zones",
+                DueDate = DateTime.Now.AddDays(2),
+                EstimatedHours = 20,
+                ActualHours = 10,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = reviewColumn.Id,
+                Title = "Code review: Backend service refactor",
+                Description = "Review refactored service layer for performance improvements",
+                Priority = Priority.Medium,
+                State = CardState.InProgress,
+                Position = 1,
+                Tags = new List<string> { "review", "backend", "refactor" },
+                AssignedTo = "Bob",
+                PercentComplete = 80,
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = doneColumn.Id,
+                Title = "Setup CI/CD pipeline",
+                Description = "Configured GitHub Actions for automated testing and deployment",
+                Priority = Priority.Medium,
+                State = CardState.Complete,
+                Position = 1,
+                Tags = new List<string> { "devops", "automation" },
+                PercentComplete = 100,
+                CompletedAt = DateTime.Now.AddDays(-1),
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            },
+            new KanbanCard
+            {
+                Id = Guid.NewGuid(),
+                ColumnId = doneColumn.Id,
+                Title = "Write unit tests for utilities",
+                Description = "Created comprehensive unit test coverage for utility functions",
+                Priority = Priority.Low,
+                State = CardState.Complete,
+                Position = 2,
+                Tags = new List<string> { "testing", "quality" },
+                PercentComplete = 100,
+                CompletedAt = DateTime.Now.AddDays(-2),
+                CreatedAt = DateTime.Now,
+                CreatedBy = "System"
+            }
+        };
+
+        allCards = sampleCards.ToList();
+        LogActivity("Board initialized with 4 columns and 8 sample cards", Icons.Material.Filled.Dashboard, Color.Primary);
+    }
+
+    private async Task OpenBoardDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Board", board },
+            { "IsEdit", true }
+        };
+
+        var dialog = await DialogService.ShowAsync<BoardDialog>("Board Settings", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is KanbanBoard updatedBoard)
+        {
+            board = updatedBoard;
+            LogActivity($"Board updated: {board.Name}", Icons.Material.Filled.Edit, Color.Info);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenAddCardDialog()
+    {
+        // Open for the first column
+        var firstColumn = board.Columns.FirstOrDefault();
+        if (firstColumn != null)
+        {
+            await OpenAddCardDialogForColumn(firstColumn);
+        }
+    }
+
+    private async Task OpenAddCardDialogForColumn(KanbanColumn column)
+    {
+        var newCard = new KanbanCard
+        {
+            ColumnId = column.Id,
+            Priority = Priority.Medium,
+            State = CardState.Available,
+            CreatedAt = DateTime.Now,
+            CreatedBy = "User"
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "Card", newCard },
+            { "IsEdit", false }
+        };
+
+        var dialog = await DialogService.ShowAsync<CardDialog>("Create Card", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is KanbanCard createdCard)
+        {
+            createdCard.Id = Guid.NewGuid();
+            createdCard.ColumnId = column.Id;
+            createdCard.Position = (allCards.Count(c => c.ColumnId == column.Id) * 100) + 1000;
+            allCards.Add(createdCard);
+            LogActivity($"Card created: {createdCard.Title}", Icons.Material.Filled.Add, Color.Success);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OpenEditCardDialog(KanbanCard card)
+    {
+        var cardCopy = new KanbanCard
+        {
+            Id = card.Id,
+            ColumnId = card.ColumnId,
+            Title = card.Title,
+            Description = card.Description,
+            Priority = card.Priority,
+            State = card.State,
+            Position = card.Position,
+            AssignedTo = card.AssignedTo,
+            ClaimedBy = card.ClaimedBy,
+            ClaimedAt = card.ClaimedAt,
+            DueDate = card.DueDate,
+            EstimatedHours = card.EstimatedHours,
+            ActualHours = card.ActualHours,
+            PercentComplete = card.PercentComplete,
+            CurrentStep = card.CurrentStep,
+            Tags = new List<string>(card.Tags),
+            SourceSystem = card.SourceSystem,
+            ExternalId = card.ExternalId,
+            CreatedAt = card.CreatedAt,
+            CreatedBy = card.CreatedBy
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "Card", cardCopy },
+            { "IsEdit", true }
+        };
+
+        var dialog = await DialogService.ShowAsync<CardDialog>("Edit Card", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is KanbanCard updatedCard)
+        {
+            var existingCard = allCards.FirstOrDefault(c => c.Id == card.Id);
+            if (existingCard != null)
+            {
+                existingCard.Title = updatedCard.Title;
+                existingCard.Description = updatedCard.Description;
+                existingCard.Priority = updatedCard.Priority;
+                existingCard.State = updatedCard.State;
+                existingCard.AssignedTo = updatedCard.AssignedTo;
+                existingCard.DueDate = updatedCard.DueDate;
+                existingCard.EstimatedHours = updatedCard.EstimatedHours;
+                existingCard.ActualHours = updatedCard.ActualHours;
+                existingCard.PercentComplete = updatedCard.PercentComplete;
+                existingCard.CurrentStep = updatedCard.CurrentStep;
+                existingCard.Tags = updatedCard.Tags;
+                existingCard.SourceSystem = updatedCard.SourceSystem;
+                existingCard.ExternalId = updatedCard.ExternalId;
+                LogActivity($"Card updated: {existingCard.Title}", Icons.Material.Filled.Edit, Color.Info);
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task OpenAddColumnDialog()
+    {
+        var newColumn = new KanbanColumn
+        {
+            BoardId = board.Id,
+            Type = ColumnType.Custom,
+            GreenlightStatus = GreenlightStatus.Conditional,
+            IsVisible = true
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "Column", newColumn },
+            { "IsEdit", false }
+        };
+
+        var dialog = await DialogService.ShowAsync<ColumnDialog>("Create Column", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is KanbanColumn createdColumn)
+        {
+            createdColumn.Id = Guid.NewGuid();
+            createdColumn.BoardId = board.Id;
+            createdColumn.Position = board.Columns.Count + 1;
+            board.Columns.Add(createdColumn);
+            LogActivity($"Column created: {createdColumn.Name}", Icons.Material.Filled.Add, Color.Success);
+            StateHasChanged();
+        }
+    }
+
+    private void DeleteCard(KanbanCard card)
+    {
+        var removed = allCards.Remove(card);
+        if (removed)
+        {
+            LogActivity($"Card deleted: {card.Title}", Icons.Material.Filled.Delete, Color.Error);
+            StateHasChanged();
+        }
+    }
+
+    private void ClaimCard(KanbanCard card)
+    {
+        card.ClaimedBy = "AgentBot-" + Random.Shared.Next(1, 100).ToString("000");
+        card.ClaimedAt = DateTime.Now;
+        card.State = CardState.Claimed;
+        LogActivity($"Card claimed: {card.Title} by {card.ClaimedBy}", Icons.Material.Filled.PersonAdd, Color.Info);
+        StateHasChanged();
+    }
+
+    private void ReleaseCard(KanbanCard card)
+    {
+        var previousClaim = card.ClaimedBy;
+        card.ClaimedBy = null;
+        card.ClaimedAt = null;
+        card.State = CardState.Available;
+        LogActivity($"Card released: {card.Title} (was claimed by {previousClaim})", Icons.Material.Filled.PersonRemove, Color.Warning);
+        StateHasChanged();
+    }
+
+    private void MoveCard(KanbanCard card, Guid targetColumnId)
+    {
+        var sourceColumn = board.Columns.FirstOrDefault(c => c.Id == card.ColumnId);
+        var targetColumn = board.Columns.FirstOrDefault(c => c.Id == targetColumnId);
+
+        if (sourceColumn != null && targetColumn != null)
+        {
+            card.ColumnId = targetColumnId;
+            LogActivity($"Card moved: {card.Title} from '{sourceColumn.Name}' to '{targetColumn.Name}'", Icons.Material.Filled.SwapHoriz, Color.Secondary);
+            StateHasChanged();
+        }
+    }
+
+    private void CardDropped(MudItemDropInfo<KanbanCard> dropInfo)
+    {
+        if (dropInfo.Item != null && dropInfo.DropzoneIdentifier != null)
+        {
+            if (Guid.TryParse(dropInfo.DropzoneIdentifier, out var targetColumnId))
+            {
+                MoveCard(dropInfo.Item, targetColumnId);
+            }
+        }
+    }
+
+    private void ResetBoard()
+    {
+        allCards.Clear();
+        board.Columns.Clear();
+        activityLog.Clear();
+        InitializeBoard();
+        StateHasChanged();
+    }
+
+    private void LogActivity(string message, string icon, Color color)
+    {
+        activityLog.Add(new ActivityLogEntry
+        {
+            Message = message,
+            Icon = icon,
+            Color = color,
+            Timestamp = DateTime.Now
+        });
+    }
+
+    private class ActivityLogEntry
+    {
+        public string Message { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+        public Color Color { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
+    private string GetColumnHeaderStyle(KanbanColumn column)
+    {
+        var color = column.Color ?? "#6200EA";
+        return $"background-color: {color}; color: white;";
+    }
+
+    private string GetGreenlightIcon(GreenlightStatus status)
+    {
+        return status switch
+        {
+            GreenlightStatus.Approved => Icons.Material.Filled.CheckCircle,
+            GreenlightStatus.Conditional => Icons.Material.Filled.Warning,
+            GreenlightStatus.NotApproved => Icons.Material.Filled.Cancel,
+            _ => Icons.Material.Filled.Help
+        };
+    }
+
+    private Color GetGreenlightIconColor(GreenlightStatus status)
+    {
+        return status switch
+        {
+            GreenlightStatus.Approved => Color.Success,
+            GreenlightStatus.Conditional => Color.Warning,
+            GreenlightStatus.NotApproved => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private string GetGreenlightTooltip(GreenlightStatus status)
+    {
+        return status switch
+        {
+            GreenlightStatus.Approved => "Greenlit - Work can proceed",
+            GreenlightStatus.Conditional => "Conditional - Review required",
+            GreenlightStatus.NotApproved => "Not greenlit - Blocked",
+            _ => "Unknown status"
+        };
+    }
+}
+
+<style>
+    .kanban-board-wrapper {
+        border-radius: 8px;
+        background-color: var(--mud-palette-background-grey);
+        min-height: 600px;
+        overflow-x: auto;
+    }
+
+    .kanban-scroll {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        padding: 1rem;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        width: 100%;
+    }
+
+    .activity-log {
+        max-height: 300px;
+        overflow-y: auto;
+        border-radius: 4px;
+        background-color: var(--mud-palette-surface);
+    }
+
+    .drop-zone {
+        transition: background-color 0.2s ease, border 0.2s ease;
+        border-radius: 8px;
+        border: 2px solid transparent;
+    }
+
+    .can-drop-highlight {
+        background-color: rgba(98, 0, 234, 0.08) !important;
+        border: 2px solid rgba(98, 0, 234, 0.4) !important;
+    }
+
+    .no-drop-highlight {
+        background-color: rgba(244, 67, 54, 0.05) !important;
+        border: 2px dashed rgba(244, 67, 54, 0.25) !important;
+    }
+
+    .mud-drop-item-dragging {
+        opacity: 0.6;
+    }
+</style>

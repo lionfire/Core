@@ -1,0 +1,141 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@isValid" @bind-Errors="@errors">
+            <MudTextField @bind-Value="Column.Name"
+                         For="@(() => Column.Name)"
+                         Immediate="true"
+                         Label="Column Name"
+                         Required="true"
+                         RequiredError="Column name is required!"
+                         Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Column.Description"
+                         For="@(() => Column.Description)"
+                         Lines="3"
+                         Label="Description"
+                         Variant="Variant.Outlined"
+                         Class="mt-3" />
+
+            <MudTextField @bind-Value="selectedColor"
+                         For="@(() => selectedColor)"
+                         Label="Column Color"
+                         Variant="Variant.Outlined"
+                         Class="mt-3"
+                         HelperText="Enter hex color code (e.g., #6200EA)" />
+
+            <MudSelect @bind-Value="Column.Type"
+                      For="@(() => Column.Type)"
+                      Label="Column Type"
+                      Variant="Variant.Outlined"
+                      Class="mt-3">
+                @foreach (ColumnType type in Enum.GetValues<ColumnType>())
+                {
+                    <MudSelectItem Value="@type">@type.ToString()</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudSelect @bind-Value="Column.GreenlightStatus"
+                      For="@(() => Column.GreenlightStatus)"
+                      Label="Greenlight Status"
+                      Variant="Variant.Outlined"
+                      Class="mt-3">
+                @foreach (GreenlightStatus status in Enum.GetValues<GreenlightStatus>())
+                {
+                    <MudSelectItem Value="@status">@GetGreenlightStatusDisplay(status)</MudSelectItem>
+                }
+            </MudSelect>
+
+            @if (Column.GreenlightStatus != GreenlightStatus.Approved)
+            {
+                <MudTextField @bind-Value="Column.GreenlightReason"
+                             For="@(() => Column.GreenlightReason)"
+                             Lines="2"
+                             Label="Greenlight Reason"
+                             Variant="Variant.Outlined"
+                             Class="mt-3"
+                             HelperText="Explain why this status was chosen" />
+            }
+
+            <MudNumericField @bind-Value="Column.WipLimit"
+                            For="@(() => Column.WipLimit)"
+                            Label="WIP Limit (Work In Progress)"
+                            Min="1"
+                            Max="99"
+                            Variant="Variant.Outlined"
+                            Class="mt-3"
+                            HelperText="Maximum number of cards allowed in this column (optional)" />
+
+            <MudCheckBox @bind-Value="Column.IsVisible"
+                        Label="Visible"
+                        Class="mt-3" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@(!isValid)"
+                   Variant="Variant.Filled">
+            @(IsEdit ? "Update" : "Create")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public global::MudBlazor.IMudDialogInstance? MudDialog { get; set; }
+    [Parameter] public KanbanColumn Column { get; set; } = new();
+    [Parameter] public bool IsEdit { get; set; }
+
+    private MudForm form = null!;
+    private bool isValid;
+    private string[] errors = { };
+    private string selectedColor = "#6200EA";
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Column.Color))
+        {
+            selectedColor = Column.Color;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Update the color when the selected color changes
+        Column.Color = selectedColor;
+    }
+
+    private void Submit()
+    {
+        if (isValid)
+        {
+            // Ensure position is set for new columns
+            if (!IsEdit && Column.Position == 0)
+            {
+                Column.Position = 1000; // Will be adjusted by the service
+            }
+
+            // Generate ID for new columns
+            if (!IsEdit && Column.Id == Guid.Empty)
+            {
+                Column.Id = Guid.NewGuid();
+            }
+
+            Column.Color = selectedColor;
+            MudDialog.Close(DialogResult.Ok(Column));
+        }
+    }
+
+    private void Cancel() => MudDialog.Close(DialogResult.Cancel());
+
+    private string GetGreenlightStatusDisplay(GreenlightStatus status)
+    {
+        return status switch
+        {
+            GreenlightStatus.Approved => "Approved - Agents can work autonomously",
+            GreenlightStatus.Conditional => "Conditional - Agents need permission",
+            GreenlightStatus.NotApproved => "Not Approved - Agents cannot work",
+            _ => status.ToString()
+        };
+    }
+}

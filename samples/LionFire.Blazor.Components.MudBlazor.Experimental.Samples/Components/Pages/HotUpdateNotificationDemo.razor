@@ -1,0 +1,147 @@
+@page "/hot-update-notification-demo"
+@using LionFire.Blazor.Components.MudBlazor_.Experimental
+
+<PageTitle>Hot Update Notification Demo</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Hot Update Notification Demo</MudText>
+<MudText Class="mb-8">Demonstrates a notification component for hot updates with customizable actions.</MudText>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Basic Usage</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => showBasicNotification = !showBasicNotification)">
+        @(showBasicNotification ? "Hide" : "Show") Basic Notification
+    </MudButton>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">With Details</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(() => showDetailsNotification = !showDetailsNotification)">
+        @(showDetailsNotification ? "Hide" : "Show") Notification With Details
+    </MudButton>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Custom Icons and Text</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="@(() => showCustomNotification = !showCustomNotification)">
+        @(showCustomNotification ? "Hide" : "Show") Custom Notification
+    </MudButton>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Processing State</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="@(() => showProcessingNotification = !showProcessingNotification)">
+        @(showProcessingNotification ? "Hide" : "Show") Processing Notification
+    </MudButton>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Without Buttons</MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@(() => showMinimalNotification = !showMinimalNotification)">
+        @(showMinimalNotification ? "Hide" : "Show") Minimal Notification
+    </MudButton>
+</MudPaper>
+
+<MudDivider Class="my-6" />
+
+<MudText Typo="Typo.h6" GutterBottom="true">Event Log</MudText>
+<MudPaper Class="pa-4" Style="max-height: 200px; overflow-y: auto;">
+    @foreach (var log in eventLog)
+    {
+        <MudText>@log</MudText>
+    }
+    @if (!eventLog.Any())
+    {
+        <MudText Color="Color.Secondary">No events yet. Interact with the notifications above.</MudText>
+    }
+</MudPaper>
+
+<!-- Notification components -->
+<HotUpdateNotification
+    Visible="@showBasicNotification"
+    Message="Update available"
+    OnRestart="@HandleRestart"
+    OnDismiss="@(() => HandleDismiss("Basic"))" />
+
+<HotUpdateNotification
+    Visible="@showDetailsNotification"
+    Message="New version detected"
+    DetailsMessage="Version 2.1.0 includes bug fixes and performance improvements"
+    ShowDetails="true"
+    OnRestart="@HandleRestart"
+    OnDismiss="@(() => HandleDismiss("Details"))" />
+
+<HotUpdateNotification
+    Visible="@showCustomNotification"
+    Icon="🚀"
+    Message="Exciting new features available!"
+    RestartButtonText="Reload Now"
+    ProcessingText="Reloading..."
+    OnRestart="@HandleRestart"
+    OnDismiss="@(() => HandleDismiss("Custom"))" />
+
+<HotUpdateNotification
+    Visible="@showProcessingNotification"
+    Message="Applying update..."
+    IsProcessing="true"
+    OnRestart="@HandleRestart"
+    OnDismiss="@(() => HandleDismiss("Processing"))" />
+
+<HotUpdateNotification
+    Visible="@showMinimalNotification"
+    Icon="ℹ️"
+    Message="New content available"
+    ShowRestartButton="false"
+    ShowDismissButton="false" />
+
+@code {
+    private bool showBasicNotification = false;
+    private bool showDetailsNotification = false;
+    private bool showCustomNotification = false;
+    private bool showProcessingNotification = false;
+    private bool showMinimalNotification = false;
+
+    private List<string> eventLog = new();
+
+    private async Task HandleRestart()
+    {
+        AddLog("Restart button clicked - simulating app restart...");
+        await Task.Delay(2000);
+        AddLog("Application restarted successfully!");
+
+        // Hide all notifications after restart
+        showBasicNotification = false;
+        showDetailsNotification = false;
+        showCustomNotification = false;
+        showProcessingNotification = false;
+    }
+
+    private void HandleDismiss(string notificationType)
+    {
+        AddLog($"{notificationType} notification dismissed");
+
+        switch (notificationType)
+        {
+            case "Basic":
+                showBasicNotification = false;
+                break;
+            case "Details":
+                showDetailsNotification = false;
+                break;
+            case "Custom":
+                showCustomNotification = false;
+                break;
+            case "Processing":
+                showProcessingNotification = false;
+                break;
+        }
+    }
+
+    private void AddLog(string message)
+    {
+        eventLog.Insert(0, $"[{DateTime.Now:HH:mm:ss}] {message}");
+        if (eventLog.Count > 10)
+        {
+            eventLog.RemoveAt(eventLog.Count - 1);
+        }
+    }
+}

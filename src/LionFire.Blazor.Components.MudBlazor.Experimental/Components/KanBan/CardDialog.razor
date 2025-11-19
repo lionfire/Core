@@ -1,0 +1,232 @@
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@isValid" @bind-Errors="@errors">
+            <MudTextField @bind-Value="Card.Title"
+                         For="@(() => Card.Title)"
+                         Immediate="true"
+                         Label="Card Title"
+                         Required="true"
+                         RequiredError="Card title is required!"
+                         Variant="Variant.Outlined" />
+
+            <MudTextField @bind-Value="Card.Description"
+                         For="@(() => Card.Description)"
+                         Lines="4"
+                         Label="Description"
+                         Variant="Variant.Outlined"
+                         Class="mt-3" />
+
+            <MudGrid Class="mt-3">
+                <MudItem xs="6">
+                    <MudSelect @bind-Value="Card.Priority"
+                              For="@(() => Card.Priority)"
+                              Label="Priority"
+                              Variant="Variant.Outlined">
+                        @foreach (Priority priority in Enum.GetValues<Priority>())
+                        {
+                            <MudSelectItem Value="@priority">@GetPriorityDisplay(priority)</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudSelect @bind-Value="Card.State"
+                              For="@(() => Card.State)"
+                              Label="State"
+                              Variant="Variant.Outlined">
+                        @foreach (CardState state in Enum.GetValues<CardState>())
+                        {
+                            <MudSelectItem Value="@state">@state.ToString()</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Class="mt-3">
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="Card.AssignedTo"
+                                 For="@(() => Card.AssignedTo)"
+                                 Label="Assigned To"
+                                 Variant="Variant.Outlined"
+                                 HelperText="Agent or user ID" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudDatePicker @bind-Date="dueDate"
+                                  For="@(() => dueDate)"
+                                  Label="Due Date"
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+
+            <MudGrid Class="mt-3">
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="Card.EstimatedHours"
+                                    For="@(() => Card.EstimatedHours)"
+                                    Label="Estimated Hours"
+                                    Min="0"
+                                    Max="999"
+                                    Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudNumericField @bind-Value="Card.ActualHours"
+                                    For="@(() => Card.ActualHours)"
+                                    Label="Actual Hours"
+                                    Min="0"
+                                    Max="999"
+                                    Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+
+            <MudSlider @bind-Value="Card.PercentComplete"
+                      Min="0"
+                      Max="100"
+                      Step="5"
+                      Class="mt-3">
+                <MudText>Progress: @Card.PercentComplete%</MudText>
+            </MudSlider>
+
+            <MudTextField @bind-Value="Card.CurrentStep"
+                         For="@(() => Card.CurrentStep)"
+                         Label="Current Step"
+                         Variant="Variant.Outlined"
+                         Class="mt-3"
+                         HelperText="Brief description of current work" />
+
+            <MudTextField @bind-Value="tagsInput"
+                         For="@(() => tagsInput)"
+                         Label="Tags"
+                         Variant="Variant.Outlined"
+                         Class="mt-3"
+                         HelperText="Comma-separated tags (e.g., bug, feature, urgent)" />
+
+            <MudExpansionPanels Class="mt-3">
+                <MudExpansionPanel MaxHeight="500" Text="External System Integration">
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="Card.SourceSystem"
+                                         For="@(() => Card.SourceSystem)"
+                                         Label="Source System"
+                                         Variant="Variant.Outlined"
+                                         HelperText="GitHub, GitLab, Filesystem, etc." />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudTextField @bind-Value="Card.ExternalId"
+                                         For="@(() => Card.ExternalId)"
+                                         Label="External ID"
+                                         Variant="Variant.Outlined"
+                                         HelperText="Issue number, PR ID, etc." />
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            @if (IsEdit && !string.IsNullOrEmpty(Card.ClaimedBy))
+            {
+                <MudAlert Severity="Severity.Info" Class="mt-3">
+                    This card is currently claimed by: <strong>@Card.ClaimedBy</strong>
+                    @if (Card.ClaimedAt.HasValue)
+                    {
+                        <br />
+                        <text>Claimed at: @Card.ClaimedAt.Value.ToString("yyyy-MM-dd HH:mm")</text>
+                    }
+                    @if (Card.ClaimExpiresAt.HasValue)
+                    {
+                        <br />
+                        <text>Expires at: @Card.ClaimExpiresAt.Value.ToString("yyyy-MM-dd HH:mm")</text>
+                    }
+                </MudAlert>
+            }
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary"
+                   OnClick="Submit"
+                   Disabled="@(!isValid)"
+                   Variant="Variant.Filled">
+            @(IsEdit ? "Update" : "Create")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public global::MudBlazor.IMudDialogInstance? MudDialog { get; set; }
+    [Parameter] public KanbanCard Card { get; set; } = new();
+    [Parameter] public bool IsEdit { get; set; }
+
+    private MudForm form = null!;
+    private bool isValid;
+    private string[] errors = { };
+    private DateTime? dueDate;
+    private string tagsInput = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        dueDate = Card.DueDate;
+        if (Card.Tags?.Any() == true)
+        {
+            tagsInput = string.Join(", ", Card.Tags);
+        }
+    }
+
+    private void Submit()
+    {
+        if (isValid)
+        {
+            // Update due date
+            Card.DueDate = dueDate;
+
+            // Parse tags from input
+            if (!string.IsNullOrWhiteSpace(tagsInput))
+            {
+                Card.Tags = tagsInput
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim())
+                    .Where(t => !string.IsNullOrEmpty(t))
+                    .ToList();
+            }
+            else
+            {
+                Card.Tags = new List<string>();
+            }
+
+            // Ensure position is set for new cards
+            if (!IsEdit && Card.Position == 0)
+            {
+                Card.Position = 1000; // Will be adjusted by the service
+            }
+
+            // Generate ID for new cards
+            if (!IsEdit && Card.Id == Guid.Empty)
+            {
+                Card.Id = Guid.NewGuid();
+            }
+
+            // Set timestamps
+            if (!IsEdit)
+            {
+                Card.CreatedAt = DateTime.UtcNow;
+                Card.CreatedBy = "current-user"; // TODO: Get from auth context
+            }
+            else
+            {
+                Card.UpdatedAt = DateTime.UtcNow;
+            }
+
+            MudDialog.Close(DialogResult.Ok(Card));
+        }
+    }
+
+    private void Cancel() => MudDialog.Close(DialogResult.Cancel());
+
+    private string GetPriorityDisplay(Priority priority)
+    {
+        return priority switch
+        {
+            Priority.Critical => "Critical",
+            Priority.High => "High",
+            Priority.Medium => "Medium",
+            Priority.Low => "Low",
+            _ => priority.ToString()
+        };
+    }
+}
