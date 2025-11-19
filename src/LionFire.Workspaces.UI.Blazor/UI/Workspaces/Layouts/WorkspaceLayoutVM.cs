@@ -20,7 +20,7 @@ using LionFire.FlexObjects;
 namespace LionFire.Workspaces.UI;
 
 public partial class WorkspaceLayoutVM : UserLayoutVM
-    //, IFlex
+//, IFlex
 {
     #region Dependencies (some of them)
 
@@ -72,10 +72,12 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     public bool WorkspacesAvailable => WorkspacesDir != null;
     public string? WorkspacesDir { get => userWorkspacesService.UserWorkspacesDir; }
-    UserWorkspacesService userWorkspacesService { get; }
+    protected UserWorkspacesService userWorkspacesService { get; }
 
     protected override async ValueTask ConfigureUserServices(IServiceCollection services)
     {
+        if (IsDisposed) return;
+
         await base.ConfigureUserServices(services);
 
         services.AddSingleton(userWorkspacesService);
@@ -110,7 +112,8 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
             Debug.WriteLine($"[WorkspaceLayoutVM] userDir: {userDir}");
 
-            if (userDir != null) {
+            if (userDir != null)
+            {
                 userWorkspacesService.UserWorkspacesDir = Path.Combine(userDir, "Workspaces");
                 Debug.WriteLine($"[WorkspaceLayoutVM] Set UserWorkspacesDir to: {userWorkspacesService.UserWorkspacesDir}");
             }
@@ -130,7 +133,14 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
             try
             {
-                services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+                if (IsDisposed)
+                {
+                    Debug.WriteLine("Workspace.LayoutVM.ConfigureUserServices: already Disposed");
+                }
+                else
+                {
+                    services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+                }
             }
             catch (ObjectDisposedException)
             {
@@ -180,8 +190,15 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     protected virtual async ValueTask ConfigureWorkspaceServices(IServiceCollection services, string? workspaceId)
     {
+        if (IsDisposed)
+        {
+            // Avoid configuring services if disposed
+            Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WARNING: Attempted to configure workspace services after disposal. Aborting.");
+            return;
+        }
         Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WorkspacesDir: {WorkspacesDir}, workspaceId: {workspaceId}");
         Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WorkspaceServiceConfigurators count: {WorkspaceServiceConfigurators.Count()}");
+        Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] UserWorkspaces: {userWorkspacesService.UserWorkspaces}");
 
         if (WorkspacesDir != null)
         {
@@ -189,7 +206,14 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
             foreach (var s in WorkspaceServiceConfigurators)
             {
                 Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] Calling configurator: {s.GetType().Name}");
-                await s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
+                try
+                {
+                    await s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] ERROR in configurator {s.GetType().Name}: {ex}");
+                }
             }
         }
         else
@@ -203,5 +227,5 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     #endregion
 
 
-    
+
 }

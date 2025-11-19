@@ -86,6 +86,9 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //public bool AllowEdit { get; set; }
 
     [Parameter]
+    public bool ShowRefresh { get; set; }
+
+    [Parameter]
     public EditMode AllowedEditModes { get; set; }
 
     [Parameter]
@@ -348,13 +351,18 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
         ViewModel.CreatableTypes = CreatableTypes ?? [];
         ViewModel.CanCreateValueType = CanCreateValueType;
         ViewModel.VMFactory = VMFactory;
+        ViewModel.ShowRefresh = ShowRefresh;
 
         //FallbackReaderWriter ??= ServiceProvider.GetService<IObservableReaderWriter<string, TValue>>();
         //FallbackReader ??= ServiceProvider.GetService<IObservableReader<string, TValue>>();
 
         //public IObservableReader<string, TValue>? Data { get; set; }
 
-        ViewModel!.Data ??= Data ?? FallbackReaderWriter ?? FallbackReader;
+        var effectiveData = Data ?? FallbackReaderWriter ?? FallbackReader;
+        if (!ReferenceEquals(ViewModel!.Data, effectiveData))
+        {
+            ViewModel!.Data = effectiveData;
+        }
 
         ViewModel.ItemsChanged.Subscribe(_ => InvokeAsync(StateHasChanged));
         //ViewModel.WhenAnyValue(vm => vm.Items).Subscribe(items => // MOVE this as an IObservable to VM class

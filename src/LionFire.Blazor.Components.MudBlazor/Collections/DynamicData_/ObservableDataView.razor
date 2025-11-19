@@ -47,7 +47,10 @@
     @if (ViewModel != null && ViewModel.ShowRefresh)
     {
         @* TODO: Special color if !HasValue, indicating first resolve is needed *@
-        @* <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" /> *@
+        @* TODO: We don't have a get method in our current interface. Need to attempt to cast Data to a gettable interface. *@
+        @* <MudIconButton 
+            Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.Items.GetCommand.Execute()" 
+            Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" /> *@
     }
 </MudToolBar>
 

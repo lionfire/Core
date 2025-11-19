@@ -11,7 +11,7 @@
     <div class="value">
         @if (Documents != null)
         {
-            <MudSelect Label="Document" T="string" @bind-Value="internalSelectedId" Variant="Variant.Filled" Style="width: 100%">
+            <MudSelect Label="@(DocumentTypeDisplayName ?? "Document")" T="string" @bind-Value="internalSelectedId" Variant="Variant.Filled" Style="width: 100%">
                 @foreach (var key in Documents.Keys.Keys)
                 {
                     <MudSelectItem Value="@key">@key</MudSelectItem>
@@ -32,6 +32,9 @@
     public IServiceProvider? UserServices { get; set; }
     [CascadingParameter(Name = "WorkspaceServices")]
     public IServiceProvider? WorkspaceServices { get; set; }
+
+    [Parameter]
+    public string? DocumentTypeDisplayName { get; set; }
 
     [Parameter]
     public string? SelectedId { get; set; }
@@ -64,26 +67,30 @@
     // protected override void OnInitialized()
     // {
     //     base.OnInitialized();
-        
+
     // }
 
     protected override async Task OnParametersSetAsync()
     {
         Documents = VM?.WorkspaceServices?.GetService<IObservableReaderWriter<string, TDocument>>();
 
-        if (SelectedId != null)
+        if (SelectedId != null && Documents.Keys.Keys.Contains(SelectedId))
         {
             internalSelectedId = SelectedId;
         }
         else if (Documents != null && Documents.Keys.Count != 0)
         {
-            _ = Task.Run(() => InvokeAsync(() => internalSelectedId = Documents.Keys.Keys.First()));
+            _ = Task.Run(() => InvokeAsync(() => internalSelectedId = Documents.Keys.Keys.FirstOrDefault()));
 
             // if (CurrentDocumentChanged.HasDelegate)
             // {
             //     await CurrentDocumentChanged.InvokeAsync(CurrentDocument);
             // }
-        } 
+        }
+        else
+        {
+            internalSelectedId = null;
+        }
         await base.OnParametersSetAsync();
     }
 

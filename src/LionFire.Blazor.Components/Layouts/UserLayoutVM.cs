@@ -33,7 +33,7 @@ public partial class UserLayoutVM : ReactiveObject, IDisposable
     }
     virtual protected void PostConstructor()
     {
-        this.WhenAnyValue(x => x.UserId).Subscribe(async _ => await OnUserChanged());
+        this.WhenAnyValue(x => x.UserId).Subscribe(async _ => await OnUserChanged()).DisposeWith(disposables);
     }
     virtual protected bool DeferPostConstructor => false;
 

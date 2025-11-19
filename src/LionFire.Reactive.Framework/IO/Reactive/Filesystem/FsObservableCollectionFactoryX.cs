@@ -33,6 +33,8 @@ public static class FsObservableCollectionFactoryX
         if (x != null)
         {
             services.AddSingleton<IObservableReaderWriter<string, TValue>>(x);
+            services.AddSingleton<IObservableReader<string, TValue>>(x);
+            services.AddSingleton<IObservableWriter<string, TValue>>(x);
         }
         return services;
     }

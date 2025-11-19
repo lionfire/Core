@@ -65,6 +65,7 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
 
     #region Reader and Writer
 
+    //public bool CanGet => Data != null && Data is IGetter g; // TODO: We need some sort of non-null refresh method or interface, if applicable
     public bool CanWrite => DataWriter != null;
 
     /// <summary>
