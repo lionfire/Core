@@ -196,9 +196,17 @@
         StateHasChanged();
     }
 
-    private void ToggleRightClickCopy()
+    private async Task ToggleRightClickCopy()
     {
         EnableRightClickCopy = !EnableRightClickCopy;
+        lastEnableRightClickCopy = EnableRightClickCopy;
+
+        // Update the JavaScript handlers immediately
+        if (dotNetRef != null)
+        {
+            await JSRuntime.InvokeVoidAsync("terminalViewer.updateRightClickCopy", terminalContainer, dotNetRef, EnableRightClickCopy);
+        }
+
         StateHasChanged();
     }
 
