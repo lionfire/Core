@@ -1,0 +1,103 @@
+@using LionFire.Tmux.Models
+
+<div class="tmux-tree-view">
+    @if (Sessions == null || !Sessions.Any())
+    {
+        <div class="tree-empty">
+            <i class="empty-icon">⬛</i>
+            <p class="empty-text">No tmux sessions</p>
+        </div>
+    }
+    else
+    {
+        <div class="tree-container">
+            @foreach (var session in Sessions)
+            {
+                <div class="tree-session @(ExpandedSessions.Contains(session.Name) ? "expanded" : "collapsed")">
+                    <!-- Session Node -->
+                    <div class="tree-node session-node @(SelectedSession?.Name == session.Name ? "selected" : "")"
+                         @onclick="@(() => ToggleSessionExpansion(session))">
+                        <i class="expand-icon">@(ExpandedSessions.Contains(session.Name) ? "▼" : "▶")</i>
+                        <i class="node-icon">📂</i>
+                        <span class="node-label">@session.Name</span>
+                        @if (session.Attached)
+                        {
+                            <span class="badge badge-attached" title="Attached">●</span>
+                        }
+                        <span class="badge badge-count" title="@session.WindowCount windows">@session.WindowCount</span>
+                    </div>
+
+                    <!-- Windows Children -->
+                    @if (ExpandedSessions.Contains(session.Name))
+                    {
+                        <div class="tree-children">
+                            @foreach (var window in session.Windows)
+                            {
+                                <div class="tree-node window-node @(SelectedWindow?.FullId == window.FullId ? "selected" : "")"
+                                     @onclick="@(() => SelectWindow(session, window))"
+                                     @onclick:stopPropagation="true">
+                                    <span class="window-radio">@(SelectedWindow?.FullId == window.FullId ? "●" : "○")</span>
+                                    <i class="node-icon">@(window.IsActive ? "★" : "□")</i>
+                                    <span class="node-label">
+                                        <span class="window-index">@window.Index:</span>
+                                        <span class="window-name">@window.Name</span>
+                                    </span>
+                                    <span class="window-command">@window.CurrentCommand</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<TmuxSession> Sessions { get; set; } = new();
+    [Parameter] public TmuxSession? SelectedSession { get; set; }
+    [Parameter] public TmuxWindow? SelectedWindow { get; set; }
+    [Parameter] public EventCallback<TmuxSession> OnSessionSelected { get; set; }
+    [Parameter] public EventCallback<TmuxWindow> OnWindowSelected { get; set; }
+    [Parameter] public HashSet<string> ExpandedSessions { get; set; } = new();
+
+    private async Task ToggleSessionExpansion(TmuxSession session)
+    {
+        if (ExpandedSessions.Contains(session.Name))
+        {
+            ExpandedSessions.Remove(session.Name);
+        }
+        else
+        {
+            ExpandedSessions.Add(session.Name);
+        }
+
+        SelectedSession = session;
+        await OnSessionSelected.InvokeAsync(session);
+        StateHasChanged();
+    }
+
+    private async Task SelectWindow(TmuxSession session, TmuxWindow window)
+    {
+        SelectedSession = session;
+        SelectedWindow = window;
+
+        // Ensure session is expanded when window is selected
+        if (!ExpandedSessions.Contains(session.Name))
+        {
+            ExpandedSessions.Add(session.Name);
+        }
+
+        await OnWindowSelected.InvokeAsync(window);
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Auto-expand first session if none expanded and sessions exist
+        if (!ExpandedSessions.Any() && Sessions != null && Sessions.Any())
+        {
+            ExpandedSessions.Add(Sessions.First().Name);
+        }
+    }
+}

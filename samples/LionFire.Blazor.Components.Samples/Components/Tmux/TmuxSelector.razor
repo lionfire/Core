@@ -1,0 +1,208 @@
+@using LionFire.Tmux.Models
+
+<div class="tmux-selector">
+    <div class="tmux-header">
+        <div class="tmux-title">
+            <span class="tmux-icon">⬛</span>
+            <span>Tmux Sessions</span>
+        </div>
+        @if (ShowActions)
+        {
+            <div class="tmux-actions">
+                <button class="action-btn" @onclick="HandleRefresh" title="Refresh Sessions">
+                    <span class="icon-refresh"></span>
+                </button>
+                @if (ShowCreateButton)
+                {
+                    <button class="action-btn action-btn-create" @onclick="HandleCreate" title="Create New Session">
+                        <span class="icon-plus"></span>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    @if (Sessions == null || !Sessions.Any())
+    {
+        <div class="tmux-empty">
+            <div class="empty-icon">⬛</div>
+            <h5>No Tmux Sessions</h5>
+            <p>No tmux sessions are currently available.</p>
+            @if (ShowCreateButton)
+            {
+                <button class="btn-create-empty" @onclick="HandleCreate">
+                    <span class="icon-plus"></span> Create New Session
+                </button>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Session Tabs -->
+        <div class="tmux-tabs">
+            <ul class="nav nav-tabs">
+                @foreach (var session in Sessions)
+                {
+                    <li class="nav-item">
+                        <button class="nav-link @(SelectedSession?.Name == session.Name ? "active" : "")"
+                                @onclick="@(() => SelectSession(session))">
+                            <span class="session-name">@session.Name</span>
+                            @if (session.Attached)
+                            {
+                                <span class="badge-attached" title="Attached">●</span>
+                            }
+                            <span class="badge-windows">@session.WindowCount</span>
+                            @if (ShowKillButtons)
+                            {
+                                <button class="btn-kill-session"
+                                        @onclick="@(() => HandleKillSession(session))"
+                                        @onclick:stopPropagation="true"
+                                        title="Kill Session">
+                                    ×
+                                </button>
+                            }
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Windows List -->
+        @if (SelectedSession != null)
+        {
+            <div class="tmux-windows">
+                <div class="windows-header">
+                    <span>Windows in @SelectedSession.Name</span>
+                    <span class="windows-count">(@SelectedSession.Windows.Count)</span>
+                </div>
+                <div class="windows-list">
+                    @if (SelectedSession.Windows.Any())
+                    {
+                        @foreach (var window in SelectedSession.Windows)
+                        {
+                            <div class="window-item @(SelectedWindow?.FullId == window.FullId ? "selected" : "")"
+                                 @onclick="@(() => SelectWindow(window))">
+                                <div class="window-radio">
+                                    @if (SelectedWindow?.FullId == window.FullId)
+                                    {
+                                        <span class="radio-selected">●</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="radio-unselected">○</span>
+                                    }
+                                </div>
+                                <div class="window-info">
+                                    <div class="window-name">
+                                        <span class="window-index">@window.Index:</span>
+                                        <span class="window-title">@window.Name</span>
+                                        @if (window.IsActive)
+                                        {
+                                            <span class="badge-active" title="Active window">★</span>
+                                        }
+                                    </div>
+                                    <div class="window-details">
+                                        <span class="window-command">@window.CurrentCommand</span>
+                                        @if (window.PaneCount > 1)
+                                        {
+                                            <span class="window-panes">(@window.PaneCount panes)</span>
+                                        }
+                                    </div>
+                                </div>
+                                @if (ShowKillButtons)
+                                {
+                                    <button class="btn-kill-window"
+                                            @onclick="@(() => HandleKillWindow(window))"
+                                            @onclick:stopPropagation="true"
+                                            title="Kill Window">
+                                        ×
+                                    </button>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="windows-empty">
+                            <p>No windows in this session</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public List<TmuxSession> Sessions { get; set; } = new();
+    [Parameter] public TmuxSession? SelectedSession { get; set; }
+    [Parameter] public TmuxWindow? SelectedWindow { get; set; }
+    [Parameter] public EventCallback<TmuxSession> OnSessionSelected { get; set; }
+    [Parameter] public EventCallback<TmuxWindow> OnWindowSelected { get; set; }
+    [Parameter] public EventCallback OnRefresh { get; set; }
+    [Parameter] public EventCallback OnCreateSession { get; set; }
+    [Parameter] public EventCallback<TmuxSession> OnKillSession { get; set; }
+    [Parameter] public EventCallback<TmuxWindow> OnKillWindow { get; set; }
+    [Parameter] public bool ShowActions { get; set; } = true;
+    [Parameter] public bool ShowCreateButton { get; set; } = true;
+    [Parameter] public bool ShowKillButtons { get; set; } = true;
+
+    private async Task SelectSession(TmuxSession session)
+    {
+        SelectedSession = session;
+
+        // Auto-select first window if none selected or if selected window is from different session
+        if (SelectedWindow == null || SelectedWindow.SessionName != session.Name)
+        {
+            var firstWindow = session.Windows.FirstOrDefault();
+            if (firstWindow != null)
+            {
+                await SelectWindow(firstWindow);
+            }
+        }
+
+        await OnSessionSelected.InvokeAsync(session);
+    }
+
+    private async Task SelectWindow(TmuxWindow window)
+    {
+        SelectedWindow = window;
+        await OnWindowSelected.InvokeAsync(window);
+    }
+
+    private async Task HandleRefresh()
+    {
+        await OnRefresh.InvokeAsync();
+    }
+
+    private async Task HandleCreate()
+    {
+        await OnCreateSession.InvokeAsync();
+    }
+
+    private async Task HandleKillSession(TmuxSession session)
+    {
+        await OnKillSession.InvokeAsync(session);
+    }
+
+    private async Task HandleKillWindow(TmuxWindow window)
+    {
+        await OnKillWindow.InvokeAsync(window);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Auto-select first session if none selected and sessions exist
+        if (SelectedSession == null && Sessions != null && Sessions.Any())
+        {
+            SelectedSession = Sessions.First();
+
+            // Auto-select first window
+            var firstWindow = SelectedSession.Windows.FirstOrDefault();
+            if (firstWindow != null)
+            {
+                SelectedWindow = firstWindow;
+            }
+        }
+    }
+}

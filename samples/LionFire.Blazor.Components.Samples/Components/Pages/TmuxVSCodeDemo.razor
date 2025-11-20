@@ -1,0 +1,407 @@
+@page "/tmux-vscode"
+@using LionFire.Blazor.Components.Samples.Components.Tmux
+@using LionFire.Blazor.Components.Samples.Components.Utility
+@using LionFire.Tmux.Models
+@using LionFire.Tmux.Services
+@inject ITmuxService TmuxService
+@rendermode InteractiveServer
+
+<PageTitle>Tmux + VS Code Layout</PageTitle>
+
+<div class="vscode-layout" data-theme="dark">
+    <!-- Activity Bar (Far Left) -->
+    <aside class="vscode-activity-bar">
+        <div class="activity-bar-items">
+            <button class="activity-bar-item @(ActiveTab == "tmux" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("tmux"))"
+                    title="Tmux Sessions">
+                <i class="activity-icon">⬛</i>
+            </button>
+            <button class="activity-bar-item @(ActiveTab == "explorer" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("explorer"))"
+                    title="Explorer">
+                <i class="activity-icon">📁</i>
+            </button>
+            <button class="activity-bar-item @(ActiveTab == "search" ? "active" : "")"
+                    @onclick="@(() => SetActiveTab("search"))"
+                    title="Search">
+                <i class="activity-icon">🔍</i>
+            </button>
+        </div>
+        <div class="activity-bar-bottom">
+            <button class="activity-bar-item" @onclick="RefreshSessions" title="Refresh Sessions">
+                <i class="activity-icon">⟳</i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Sidebar (Tree View) -->
+    <aside class="vscode-sidebar @(IsSidebarCollapsed ? "collapsed" : "expanded")">
+        <div class="sidebar-content">
+            @if (ActiveTab == "tmux" && !IsSidebarCollapsed)
+            {
+                <div class="sidebar-panel tmux-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">TMUX SESSIONS</h3>
+                        <div class="panel-actions">
+                            <button class="action-btn" @onclick="RefreshSessions" title="Refresh">
+                                <i class="icon">⟳</i>
+                            </button>
+                            <button class="action-btn" @onclick="CreateSession" title="New Session">
+                                <i class="icon">+</i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel-content">
+                        @if (loading)
+                        {
+                            <div class="panel-loading">
+                                <div class="loading-spinner"></div>
+                                <p>Loading sessions...</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <TmuxTreeView Sessions="@sessions"
+                                        SelectedSession="@selectedSession"
+                                        SelectedWindow="@selectedWindow"
+                                        OnSessionSelected="HandleSessionSelected"
+                                        OnWindowSelected="HandleWindowSelected"
+                                        ExpandedSessions="@expandedSessions" />
+                        }
+                    </div>
+                </div>
+            }
+            else if (ActiveTab == "explorer" && !IsSidebarCollapsed)
+            {
+                <div class="sidebar-panel explorer-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">EXPLORER</h3>
+                    </div>
+                    <div class="panel-content">
+                        <p class="text-muted">Explorer view (future feature)</p>
+                    </div>
+                </div>
+            }
+            else if (ActiveTab == "search" && !IsSidebarCollapsed)
+            {
+                <div class="sidebar-panel search-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">SEARCH</h3>
+                    </div>
+                    <div class="panel-content">
+                        <p class="text-muted">Search view (future feature)</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="vscode-main">
+        <!-- Info Banner -->
+        <div class="info-banner">
+            <div class="banner-content">
+                <i class="banner-icon">ℹ️</i>
+                <div class="banner-text">
+                    <strong>Tmux + VSCode Layout Integration</strong>
+                    <span class="separator">•</span>
+                    @if (selectedWindow != null)
+                    {
+                        <span>Viewing: @selectedWindow.SessionName:@selectedWindow.Name</span>
+                    }
+                    else
+                    {
+                        <span>Select a window from the sidebar to view output</span>
+                    }
+                    <span class="separator">•</span>
+                    @if (isMockService)
+                    {
+                        <span class="badge bg-info ms-2">Mock Mode</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success ms-2">Real Tmux</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Viewer Area -->
+        <div class="terminal-area">
+            @if (selectedWindow != null)
+            {
+                <div class="terminal-output-area">
+                    <TerminalViewer @ref="terminalViewer"
+                                  Title="@($"{selectedWindow.SessionName}:{selectedWindow.Index} ({selectedWindow.Name})")"
+                                  OutputLines="@terminalOutput"
+                                  AutoScroll="true"
+                                  MaxLines="500"
+                                  MaxVisibleLines="100" />
+                </div>
+
+                <!-- Input Area -->
+                <div class="terminal-input-area">
+                    <div class="input-container">
+                        <div class="input-prompt">$</div>
+                        <input type="text"
+                               class="terminal-input"
+                               placeholder="Type command and press Enter..."
+                               @bind="inputText"
+                               @bind:event="oninput"
+                               @onkeydown="HandleKeyDown"
+                               disabled="@isSending" />
+                        <button class="send-btn @(string.IsNullOrWhiteSpace(inputText) ? "disabled" : "")"
+                                @onclick="SendInput"
+                                disabled="@(string.IsNullOrWhiteSpace(inputText) || isSending)">
+                            @if (isSending)
+                            {
+                                <span class="sending-spinner"></span>
+                            }
+                            else
+                            {
+                                <span>Send</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-terminal">
+                    <div class="empty-content">
+                        <i class="empty-icon">⬛</i>
+                        <h3>No Window Selected</h3>
+                        <p class="text-muted">
+                            Select a tmux window from the sidebar to view its output
+                        </p>
+                        <p class="text-muted small">
+                            Click the <strong>⬛ Tmux Sessions</strong> icon in the activity bar
+                        </p>
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@if (showCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.7);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Tmux Session</h5>
+                    <button type="button" class="btn-close" @onclick="HideCreateModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="sessionName" class="form-label">Session Name</label>
+                        <input type="text" class="form-control" id="sessionName"
+                               @bind="newSessionName"
+                               placeholder="e.g., my-session">
+                    </div>
+                    <div class="mb-3">
+                        <label for="startCommand" class="form-label">Start Command</label>
+                        <input type="text" class="form-control" id="startCommand"
+                               @bind="newSessionCommand"
+                               placeholder="bash">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideCreateModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="CreateNewSession">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // Layout state
+    private bool IsSidebarCollapsed { get; set; } = false;
+    private string ActiveTab { get; set; } = "tmux";
+
+    // Tmux state
+    private List<TmuxSession> sessions = new();
+    private TmuxSession? selectedSession;
+    private TmuxWindow? selectedWindow;
+    private HashSet<string> expandedSessions = new();
+    private List<string> terminalOutput = new();
+    private TerminalViewer? terminalViewer;
+    private bool loading = true;
+    private bool isMockService = false;
+
+    // Modal state
+    private bool showCreateModal = false;
+    private string newSessionName = "";
+    private string newSessionCommand = "bash";
+
+    // Input state
+    private string inputText = "";
+    private bool isSending = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Detect service type
+        isMockService = TmuxService is MockTmuxService;
+
+        await LoadSessions();
+    }
+
+    private async Task LoadSessions()
+    {
+        loading = true;
+        StateHasChanged();
+
+        sessions = await TmuxService.GetSessionsAsync();
+
+        // Auto-select first session and window if available
+        if (sessions.Any())
+        {
+            selectedSession = sessions.First();
+            expandedSessions.Add(selectedSession.Name);
+
+            selectedWindow = selectedSession.Windows.FirstOrDefault();
+
+            if (selectedWindow != null)
+            {
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSessionSelected(TmuxSession session)
+    {
+        selectedSession = session;
+
+        // Auto-select first window if none selected or different session
+        if (selectedWindow == null || selectedWindow.SessionName != session.Name)
+        {
+            selectedWindow = session.Windows.FirstOrDefault();
+            if (selectedWindow != null)
+            {
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleWindowSelected(TmuxWindow window)
+    {
+        selectedWindow = window;
+        await LoadWindowOutput(window);
+        StateHasChanged();
+    }
+
+    private async Task LoadWindowOutput(TmuxWindow window)
+    {
+        var output = await TmuxService.CaptureWindowOutputAsync(window.SessionName, window.Index);
+        terminalOutput = output;
+
+        if (terminalViewer != null)
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshSessions()
+    {
+        await LoadSessions();
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        ActiveTab = tab;
+
+        // Auto-expand first session when switching to tmux tab
+        if (tab == "tmux" && sessions.Any() && !expandedSessions.Any())
+        {
+            expandedSessions.Add(sessions.First().Name);
+        }
+    }
+
+    private void CreateSession()
+    {
+        newSessionName = $"session-{DateTime.Now:HHmmss}";
+        newSessionCommand = "bash";
+        showCreateModal = true;
+        StateHasChanged();
+    }
+
+    private void HideCreateModal()
+    {
+        showCreateModal = false;
+        StateHasChanged();
+    }
+
+    private async Task CreateNewSession()
+    {
+        if (string.IsNullOrWhiteSpace(newSessionName))
+        {
+            return;
+        }
+
+        var success = await TmuxService.CreateSessionAsync(newSessionName, newSessionCommand);
+
+        if (success)
+        {
+            HideCreateModal();
+            await LoadSessions();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(inputText) && !isSending)
+        {
+            await SendInput();
+        }
+    }
+
+    private async Task SendInput()
+    {
+        if (selectedWindow == null || string.IsNullOrWhiteSpace(inputText) || isSending)
+        {
+            return;
+        }
+
+        isSending = true;
+        StateHasChanged();
+
+        try
+        {
+            // Send the input to the tmux window
+            var success = await TmuxService.SendKeysAsync(
+                selectedWindow.SessionName,
+                selectedWindow.Index,
+                inputText,
+                sendEnter: true
+            );
+
+            if (success)
+            {
+                // Clear input
+                inputText = "";
+
+                // Reload the window output after a short delay to see the result
+                await Task.Delay(200);
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending input: {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,301 @@
+@page "/tmux-demo"
+@using LionFire.Blazor.Components.Samples.Components.Tmux
+@using LionFire.Blazor.Components.Samples.Components.Utility
+@using LionFire.Tmux.Models
+@using LionFire.Tmux.Services
+@inject ITmuxService TmuxService
+@rendermode InteractiveServer
+
+<PageTitle>Tmux Session Manager</PageTitle>
+
+<h1>🖥️ Tmux Session Manager</h1>
+
+<p class="lead">
+    Select a tmux session and window to view its output. This demo uses mock data (no actual tmux required).
+</p>
+
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">📖 About This Demo</h5>
+                <p class="card-text">
+                    This component demonstrates a tmux session/window selector integrated with the TerminalViewer component.
+                    The architecture separates concerns cleanly:
+                </p>
+                <ul>
+                    <li><strong>TmuxSelector</strong>: Displays sessions as tabs, windows as selectable list</li>
+                    <li><strong>TerminalViewer</strong>: Shows terminal output with ANSI colors, auto-scroll, copy features</li>
+                    <li><strong>LionFire.Tmux</strong>: Reusable service layer (class library) with mock implementation</li>
+                </ul>
+                <p class="mb-2">
+                    <strong>Current Mode:</strong>
+                    @if (isMockService)
+                    {
+                        <span class="badge bg-info">Mock Service</span>
+                        <span class="text-muted">(demo data, no tmux required)</span>
+                    }
+                    else if (tmuxAvailable)
+                    {
+                        <span class="badge bg-success">Real Tmux</span>
+                        <span class="text-muted">(connected to actual tmux sessions)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Real Service (Tmux Not Available)</span>
+                    }
+                </p>
+                @if (isMockService)
+                {
+                    <p class="mb-0 small text-muted">
+                        To use real tmux: Change <code>AddMockTmuxService()</code> to <code>AddTmuxService()</code> in Program.cs
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (loading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading sessions...</span>
+        </div>
+        <p class="mt-3">Loading tmux sessions...</p>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <TmuxSelector Sessions="@sessions"
+                         SelectedSession="@selectedSession"
+                         SelectedWindow="@selectedWindow"
+                         OnSessionSelected="HandleSessionSelected"
+                         OnWindowSelected="HandleWindowSelected"
+                         OnRefresh="LoadSessions"
+                         OnCreateSession="HandleCreateSession"
+                         OnKillSession="HandleKillSession"
+                         OnKillWindow="HandleKillWindow" />
+        </div>
+
+        <div class="col-lg-7">
+            @if (selectedWindow != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-header bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong>Viewing:</strong> @selectedWindow.SessionName:@selectedWindow.Index (@selectedWindow.Name)
+                            </span>
+                            @if (selectedWindow.IsActive)
+                            {
+                                <span class="badge bg-warning">Active Window</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <TerminalViewer @ref="terminalViewer"
+                              Title="@($"{selectedWindow.SessionName}:{selectedWindow.Name}")"
+                              OutputLines="@terminalOutput"
+                              AutoScroll="true"
+                              MaxLines="500"
+                              MaxVisibleLines="100" />
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <div class="display-1 text-muted">⬛</div>
+                        <h4 class="mt-3">No Window Selected</h4>
+                        <p class="text-muted">Select a window from the left panel to view its output</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (showCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Tmux Session</h5>
+                    <button type="button" class="btn-close" @onclick="HideCreateModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="sessionName" class="form-label">Session Name</label>
+                        <input type="text" class="form-control" id="sessionName"
+                               @bind="newSessionName"
+                               placeholder="e.g., my-work-session">
+                    </div>
+                    <div class="mb-3">
+                        <label for="startCommand" class="form-label">Start Command (Optional)</label>
+                        <input type="text" class="form-control" id="startCommand"
+                               @bind="newSessionCommand"
+                               placeholder="e.g., bash, python, dotnet">
+                        <div class="form-text">The command to run when the session starts (default: bash)</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideCreateModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="CreateSession">
+                        Create Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<TmuxSession> sessions = new();
+    private TmuxSession? selectedSession;
+    private TmuxWindow? selectedWindow;
+    private List<string> terminalOutput = new();
+    private TerminalViewer? terminalViewer;
+    private bool loading = true;
+    private bool showCreateModal = false;
+    private string newSessionName = "";
+    private string newSessionCommand = "bash";
+    private bool isMockService = false;
+    private bool tmuxAvailable = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Detect service type
+        isMockService = TmuxService is MockTmuxService;
+        if (!isMockService)
+        {
+            tmuxAvailable = await TmuxService.IsTmuxAvailableAsync();
+        }
+
+        await LoadSessions();
+    }
+
+    private async Task LoadSessions()
+    {
+        loading = true;
+        StateHasChanged();
+
+        sessions = await TmuxService.GetSessionsAsync();
+
+        // Auto-select first session and window if available
+        if (sessions.Any())
+        {
+            selectedSession = sessions.First();
+            selectedWindow = selectedSession.Windows.FirstOrDefault();
+
+            if (selectedWindow != null)
+            {
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSessionSelected(TmuxSession session)
+    {
+        selectedSession = session;
+        selectedWindow = session.Windows.FirstOrDefault();
+
+        if (selectedWindow != null)
+        {
+            await LoadWindowOutput(selectedWindow);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleWindowSelected(TmuxWindow window)
+    {
+        selectedWindow = window;
+        await LoadWindowOutput(window);
+        StateHasChanged();
+    }
+
+    private async Task LoadWindowOutput(TmuxWindow window)
+    {
+        var output = await TmuxService.CaptureWindowOutputAsync(window.SessionName, window.Index);
+        terminalOutput = output;
+
+        // Update the terminal viewer if it exists
+        if (terminalViewer != null)
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void HandleCreateSession()
+    {
+        newSessionName = $"session-{DateTime.Now:HHmmss}";
+        newSessionCommand = "bash";
+        showCreateModal = true;
+        StateHasChanged();
+    }
+
+    private void HideCreateModal()
+    {
+        showCreateModal = false;
+        StateHasChanged();
+    }
+
+    private async Task CreateSession()
+    {
+        if (string.IsNullOrWhiteSpace(newSessionName))
+        {
+            return;
+        }
+
+        var success = await TmuxService.CreateSessionAsync(newSessionName, newSessionCommand);
+
+        if (success)
+        {
+            HideCreateModal();
+            await LoadSessions();
+        }
+    }
+
+    private async Task HandleKillSession(TmuxSession session)
+    {
+        // Confirm before killing
+        var success = await TmuxService.KillSessionAsync(session.Name);
+
+        if (success)
+        {
+            // If we killed the selected session, clear selection
+            if (selectedSession?.Name == session.Name)
+            {
+                selectedSession = null;
+                selectedWindow = null;
+                terminalOutput = new();
+            }
+
+            await LoadSessions();
+        }
+    }
+
+    private async Task HandleKillWindow(TmuxWindow window)
+    {
+        var success = await TmuxService.KillWindowAsync(window.SessionName, window.Index);
+
+        if (success)
+        {
+            // If we killed the selected window, clear selection
+            if (selectedWindow?.FullId == window.FullId)
+            {
+                selectedWindow = null;
+                terminalOutput = new();
+            }
+
+            await LoadSessions();
+        }
+    }
+}

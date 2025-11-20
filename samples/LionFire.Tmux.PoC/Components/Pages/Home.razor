@@ -1,0 +1,378 @@
+@page "/"
+@using LionFire.Blazor.Components.Samples.Components.Tmux
+@using LionFire.Blazor.Components.Samples.Components.Utility
+@using LionFire.Tmux.Models
+@using LionFire.Tmux.Services
+@inject ITmuxService TmuxService
+@rendermode InteractiveServer
+
+<PageTitle>Tmux PoC - Real Integration</PageTitle>
+
+<link rel="stylesheet" href="../LionFire.Blazor.Components.Samples/Components/Tmux/TmuxTreeView.razor.css" />
+<link rel="stylesheet" href="../LionFire.Blazor.Components.Samples/Components/Utility/TerminalViewer.razor.css" />
+
+<div class="vscode-layout" data-theme="dark">
+    <!-- Activity Bar (Far Left) -->
+    <aside class="vscode-activity-bar">
+        <div class="activity-bar-items">
+            <button class="activity-bar-item active" title="Tmux Sessions">
+                <i class="activity-icon">⬛</i>
+            </button>
+        </div>
+        <div class="activity-bar-bottom">
+            <button class="activity-bar-item" @onclick="RefreshSessions" title="Refresh Sessions">
+                <i class="activity-icon">⟳</i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Sidebar (Tree View) -->
+    <aside class="vscode-sidebar expanded">
+        <div class="sidebar-content">
+            <div class="sidebar-panel tmux-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">TMUX SESSIONS</h3>
+                    <div class="panel-actions">
+                        <button class="action-btn" @onclick="RefreshSessions" title="Refresh">
+                            <i class="icon"></i>
+                        </button>
+                        <button class="action-btn" @onclick="CreateSession" title="New Session">
+                            <i class="icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    @if (loading)
+                    {
+                        <div class="panel-loading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading sessions...</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <TmuxTreeView Sessions="@sessions"
+                                    SelectedSession="@selectedSession"
+                                    SelectedWindow="@selectedWindow"
+                                    OnSessionSelected="HandleSessionSelected"
+                                    OnWindowSelected="HandleWindowSelected"
+                                    ExpandedSessions="@expandedSessions" />
+                    }
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="vscode-main">
+        <!-- Info Banner -->
+        <div class="info-banner">
+            <div class="banner-content">
+                <i class="banner-icon">⚡</i>
+                <div class="banner-text">
+                    <strong>Real Tmux Integration - Proof of Concept</strong>
+                    <span class="separator">•</span>
+                    @if (selectedWindow != null)
+                    {
+                        <span>@selectedWindow.SessionName:@selectedWindow.Name</span>
+                    }
+                    else
+                    {
+                        <span>Select a window to interact</span>
+                    }
+                    <span class="separator">•</span>
+                    @if (tmuxAvailable)
+                    {
+                        <span class="badge bg-success ms-2">Tmux Connected</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger ms-2">Tmux Not Found</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Viewer Area -->
+        <div class="terminal-area">
+            @if (selectedWindow != null)
+            {
+                <div class="terminal-output-area">
+                    <TerminalViewer @ref="terminalViewer"
+                                  Title="@($"{selectedWindow.SessionName}:{selectedWindow.Index} ({selectedWindow.Name})")"
+                                  OutputLines="@terminalOutput"
+                                  AutoScroll="true"
+                                  MaxLines="1000"
+                                  MaxVisibleLines="200" />
+                </div>
+
+                <!-- Input Area -->
+                <div class="terminal-input-area">
+                    <div class="input-container">
+                        <div class="input-prompt">$</div>
+                        <input type="text"
+                               class="terminal-input"
+                               placeholder="Type command and press Enter to send to tmux window..."
+                               @bind="inputText"
+                               @bind:event="oninput"
+                               @onkeydown="HandleKeyDown"
+                               disabled="@isSending"
+                               autofocus />
+                        <button class="send-btn @(string.IsNullOrWhiteSpace(inputText) ? "disabled" : "")"
+                                @onclick="SendInput"
+                                disabled="@(string.IsNullOrWhiteSpace(inputText) || isSending)"
+                                title="Send command (or press Enter)">
+                            @if (isSending)
+                            {
+                                <span class="sending-spinner"></span>
+                            }
+                            else
+                            {
+                                <span>Send</span>
+                            }
+                        </button>
+                    </div>
+                    <div class="input-hint">
+                        💡 Commands are sent to the selected tmux window. Press Enter or click Send.
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="empty-terminal">
+                    <div class="empty-content">
+                        <i class="empty-icon">⬛</i>
+                        <h3>@(tmuxAvailable ? "No Window Selected" : "Tmux Not Available")</h3>
+                        @if (tmuxAvailable)
+                        {
+                            <p class="text-muted">
+                                Select a tmux window from the sidebar to interact with it
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-danger">
+                                Tmux is not installed or not in PATH
+                            </p>
+                            <div class="alert alert-warning mt-3">
+                                <strong>To install tmux:</strong>
+                                <ul class="mb-0 text-start">
+                                    <li>Ubuntu/Debian: <code>sudo apt install tmux</code></li>
+                                    <li>macOS: <code>brew install tmux</code></li>
+                                    <li>WSL: <code>sudo apt install tmux</code></li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </main>
+</div>
+
+@if (showCreateModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.7);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Tmux Session</h5>
+                    <button type="button" class="btn-close" @onclick="HideCreateModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="sessionName" class="form-label">Session Name</label>
+                        <input type="text" class="form-control" id="sessionName"
+                               @bind="newSessionName"
+                               placeholder="e.g., my-session">
+                    </div>
+                    <div class="mb-3">
+                        <label for="startCommand" class="form-label">Start Command</label>
+                        <input type="text" class="form-control" id="startCommand"
+                               @bind="newSessionCommand"
+                               placeholder="bash">
+                        <div class="form-text">Command to run in the new session</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="HideCreateModal">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="CreateNewSession">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // Tmux state
+    private List<TmuxSession> sessions = new();
+    private TmuxSession? selectedSession;
+    private TmuxWindow? selectedWindow;
+    private HashSet<string> expandedSessions = new();
+    private List<string> terminalOutput = new();
+    private TerminalViewer? terminalViewer;
+    private bool loading = true;
+    private bool tmuxAvailable = false;
+
+    // Modal state
+    private bool showCreateModal = false;
+    private string newSessionName = "";
+    private string newSessionCommand = "bash";
+
+    // Input state
+    private string inputText = "";
+    private bool isSending = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if tmux is available
+        tmuxAvailable = await TmuxService.IsTmuxAvailableAsync();
+
+        await LoadSessions();
+    }
+
+    private async Task LoadSessions()
+    {
+        loading = true;
+        StateHasChanged();
+
+        sessions = await TmuxService.GetSessionsAsync();
+
+        // Auto-select first session and window if available
+        if (sessions.Any())
+        {
+            selectedSession = sessions.First();
+            expandedSessions.Add(selectedSession.Name);
+
+            selectedWindow = selectedSession.Windows.FirstOrDefault();
+
+            if (selectedWindow != null)
+            {
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+
+        loading = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleSessionSelected(TmuxSession session)
+    {
+        selectedSession = session;
+
+        // Auto-select first window if none selected or different session
+        if (selectedWindow == null || selectedWindow.SessionName != session.Name)
+        {
+            selectedWindow = session.Windows.FirstOrDefault();
+            if (selectedWindow != null)
+            {
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleWindowSelected(TmuxWindow window)
+    {
+        selectedWindow = window;
+        await LoadWindowOutput(window);
+        StateHasChanged();
+    }
+
+    private async Task LoadWindowOutput(TmuxWindow window)
+    {
+        var output = await TmuxService.CaptureWindowOutputAsync(window.SessionName, window.Index, lines: 200);
+        terminalOutput = output;
+
+        if (terminalViewer != null)
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task RefreshSessions()
+    {
+        await LoadSessions();
+    }
+
+    private void CreateSession()
+    {
+        newSessionName = $"poc-session-{DateTime.Now:HHmmss}";
+        newSessionCommand = "bash";
+        showCreateModal = true;
+        StateHasChanged();
+    }
+
+    private void HideCreateModal()
+    {
+        showCreateModal = false;
+        StateHasChanged();
+    }
+
+    private async Task CreateNewSession()
+    {
+        if (string.IsNullOrWhiteSpace(newSessionName))
+        {
+            return;
+        }
+
+        var success = await TmuxService.CreateSessionAsync(newSessionName, newSessionCommand);
+
+        if (success)
+        {
+            HideCreateModal();
+            await LoadSessions();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(inputText) && !isSending)
+        {
+            await SendInput();
+        }
+    }
+
+    private async Task SendInput()
+    {
+        if (selectedWindow == null || string.IsNullOrWhiteSpace(inputText) || isSending)
+        {
+            return;
+        }
+
+        isSending = true;
+        StateHasChanged();
+
+        try
+        {
+            // Send the input to the tmux window
+            var success = await TmuxService.SendKeysAsync(
+                selectedWindow.SessionName,
+                selectedWindow.Index,
+                inputText,
+                sendEnter: true
+            );
+
+            if (success)
+            {
+                // Clear input
+                inputText = "";
+
+                // Reload the window output after a short delay to see the result
+                await Task.Delay(500);
+                await LoadWindowOutput(selectedWindow);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending input: {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+            StateHasChanged();
+        }
+    }
+}

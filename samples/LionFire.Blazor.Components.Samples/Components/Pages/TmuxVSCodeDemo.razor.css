@@ -1,0 +1,219 @@
+/* Info Banner */
+.info-banner {
+    background: #252526;
+    border-bottom: 1px solid #3e3e42;
+    padding: 8px 16px;
+    min-height: 35px;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cccccc;
+    font-size: 12px;
+}
+
+.banner-icon {
+    font-size: 14px;
+    color: #75beff;
+}
+
+.banner-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.banner-text strong {
+    color: #ffffff;
+}
+
+.separator {
+    color: #6a6a6a;
+}
+
+/* Terminal Area */
+.terminal-area {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #1e1e1e;
+}
+
+.terminal-output-area {
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Terminal Input Area */
+.terminal-input-area {
+    border-top: 1px solid #444;
+    background: #252526;
+    padding: 8px 12px;
+    flex-shrink: 0;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 10px;
+    transition: border-color 0.2s ease;
+}
+
+.input-container:focus-within {
+    border-color: #0dbc79;
+    box-shadow: 0 0 0 1px #0dbc79;
+}
+
+.input-prompt {
+    color: #4a9eff;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #d4d4d4;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 4px 8px;
+}
+
+.terminal-input::placeholder {
+    color: #6a6a6a;
+    font-style: italic;
+}
+
+.terminal-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.send-btn {
+    background: #0dbc79;
+    border: none;
+    color: #1e1e1e;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+    background: #0fa065;
+}
+
+.send-btn:disabled,
+.send-btn.disabled {
+    background: #404040;
+    color: #6a6a6a;
+    cursor: not-allowed;
+}
+
+.sending-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid #1e1e1e;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* Empty Terminal State */
+.empty-terminal {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1e1e1e;
+}
+
+.empty-content {
+    text-align: center;
+    color: #6a6a6a;
+    padding: 40px;
+}
+
+.empty-icon {
+    font-size: 72px;
+    opacity: 0.2;
+    margin-bottom: 20px;
+}
+
+.empty-content h3 {
+    color: #cccccc;
+    margin-bottom: 12px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.empty-content p {
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.empty-content .small {
+    font-size: 12px;
+    margin-top: 16px;
+}
+
+/* Activity Bar Bottom Actions */
+.activity-bar-bottom {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #3e3e42;
+}
+
+/* Panel Loading State */
+.panel-loading {
+    padding: 40px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.loading-spinner {
+    border: 3px solid #3e3e42;
+    border-top: 3px solid #0e639c;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.panel-loading p {
+    font-size: 12px;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .banner-text {
+        flex-wrap: wrap;
+    }
+
+    .separator {
+        display: none;
+    }
+}
