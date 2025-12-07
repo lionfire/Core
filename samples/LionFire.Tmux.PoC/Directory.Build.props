@@ -1,0 +1,12 @@
+<Project>
+  <!-- Import parent properties first -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Override BuildRoot for cross-platform compatibility -->
+    <!-- Set to local directory instead of shared Windows build path -->
+    <BuildRoot>$(MSBuildThisFileDirectory)</BuildRoot>
+    <BaseIntermediateOutputPath>$(BuildRoot)obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BuildRoot)bin\</BaseOutputPath>
+  </PropertyGroup>
+</Project>
