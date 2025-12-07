@@ -92,18 +92,18 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         //    .AsObservableCache()
         //    ;
 
-        var published = Values
+        var publishedValues = Values
             .Connect()
             .Publish();
 
-        ObservableCache = published
+        ObservableCache = publishedValues
             //.Transform(x => x.optional)
             .AsObservableCache();
 
         IDisposable? listenAllSubscription = null;
 
         // Track subscriber count
-        var subscriberCount = published
+        var subscriberCount = publishedValues
             .SubscribeCount() // Custom extension method (defined below)
             .Subscribe(count =>
             {
@@ -121,7 +121,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
             });
 
         // Connect the shared observable
-        _disposables.Add(published.Connect());
+        _disposables.Add(publishedValues.Connect());
         _disposables.Add(subscriberCount);
         _disposables.Add(ObservableCache);
     }
@@ -499,7 +499,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     }
 
     public IObservable<TValue?>? GetValueObservableIfExists(TKey key)
-        => !Keys.Keys.Contains(key)
+        => !Keys.Keys.Contains(key) // TODO - LIMITATION - in the case where we are not already watching for all keys (expensive when there are a lot of keys), we can extend this to probe for the existance of the file on disk.
         ? null
         : valueObservables.GetOrAdd(key, k => CreateValueObservable(k)
             .Publish()
@@ -507,7 +507,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     public IObservable<TValue?> GetValueObservable(TKey key)
         => valueObservables.GetOrAdd(key, k => CreateValueObservable(k)
-            .Publish()
+            .Replay(1)  // Cache the most recent value
             .RefCount());
 
     private ConcurrentDictionary<TKey, IObservable<TValue?>> valueObservables = new();
@@ -525,10 +525,34 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
         ValuesListeningToKeysSubscription = ListenAllKeys();
 
-        //if (toLoad.Any())
-        //{
-        //    await Task.WhenAll(toLoad.Select(x => TryGetValue(x.Key).AsTask()));
-        //}
+        // Load all existing values that don't have data yet
+        // Subscribe to each value observable to trigger the lazy loading
+        if (toLoad.Any())
+        {
+            Logger?.LogDebug($"[StartListeningToAllValues] Loading {toLoad.Count()} values that don't have data yet");
+
+            foreach (var kvp in toLoad)
+            {
+                var key = kvp.Key;
+                Logger?.LogTrace($"[StartListeningToAllValues] Subscribing to value observable for key: {key}");
+
+                // Subscribe to the value observable to trigger loading
+                if (!listenToAllListeners.Lookup(key).HasValue)
+                {
+                    var subscription = GetValueObservable(key).Subscribe(v => OnValue(key, v));
+                    listenToAllListeners.AddOrUpdate((key, subscription));
+                }
+            }
+
+            Logger?.LogDebug($"[StartListeningToAllValues] All value subscriptions created");
+        }
+        else
+        {
+            Logger?.LogDebug($"[StartListeningToAllValues] No values need loading (all already loaded)");
+        }
+
+        // Give a small delay to allow async loading to start
+        await Task.Delay(10);
     }
 
     //public ValueTask<Optional<TValue>> TryGetValue(TKey key)
