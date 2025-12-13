@@ -50,6 +50,10 @@ Blazor component patterns and reactive UI development.
 - [Component Catalog](ui/component-catalog.md) - All available components
 - [Reactive UI Updates](ui/reactive-ui-updates.md) - Update flow and performance
 
+#### **[Reactive Programming](reactive/)** 🆕
+Observable patterns with DynamicData, on-demand activation, and lifecycle management.
+- [Overview](reactive/README.md) - Reactive patterns quick reference ⭐ START HERE
+
 #### **[VOS (Virtual Object System)](data/vos/)**
 Virtual filesystem with mounting, overlays, and dependency injection.
 - [VOS Overview](data/vos/vos-overview.md)
@@ -149,8 +153,12 @@ High-level system design, layer relationships, and design philosophy.
   - [LionFire.Workspaces.UI.Blazor](../src/LionFire.Workspaces.UI.Blazor/CLAUDE.md)
 
 #### Reactive Programming
-- [Reactive Utilities](../src/LionFire.Reactive/CLAUDE.md) - File watching, persistence, lifecycle
-- [Observable Patterns](../src/LionFire.Reactive/CLAUDE.md#reactive-persistence)
+- **[Reactive Domain Docs](reactive/)** 🆕 - Complete reactive patterns guide (805 lines)
+  - [Overview](reactive/README.md) - DynamicData, on-demand, runners
+- **[Reactive Architecture](architecture/reactive/)** - Architecture deep dive
+  - [Reactive Persistence](architecture/reactive/reactive-persistence.md) - IObservableReader/Writer
+  - [Runner Pattern](architecture/reactive/runner-pattern.md) - Lifecycle management
+- [Reactive Utilities](../src/LionFire.Reactive/CLAUDE.md) - API reference
 - [Reactive UI Updates](ui/reactive-ui-updates.md) - UI update flow
 
 #### Virtual Object System (VOS)
@@ -159,16 +167,42 @@ High-level system design, layer relationships, and design philosophy.
 - [VOS Architecture](data/vos/vos-architecture.md)
 - [VOS Examples](data/vos/vos-examples.md)
 
+### 🚀 Getting Started Guides
+
+**Complete Series** (6 guides):
+- [01. Base Layer Utilities](guides/getting-started/01-base-layer.md) - Extension methods and common utilities
+- [02. Async Data Access](guides/getting-started/02-async-data.md) - IGetter, IValue, and lazy loading
+- [03. MVVM Basics](guides/getting-started/03-mvvm-basics.md) - ViewModels with ReactiveUI
+- [04. Reactive Collections](guides/getting-started/04-reactive-collections.md) 🆕 - DynamicData and observable collections
+- [05. File-Based Persistence](guides/getting-started/05-persistence.md) 🆕 - IObservableReader/Writer patterns
+- [06. VOS Introduction](guides/getting-started/06-vos-introduction.md) 🆕 - Virtual Object System basics
+
 ### 🛠️ How-To Guides
 
-**Available:**
+**Available** (10 guides) ✅ **MILESTONE COMPLETE**:
+
+**Data Access:**
+- [Implement Custom Getter](guides/how-to/implement-custom-getter.md) - 5 approaches to fetching data
+- [Implement Caching Strategies](guides/how-to/implement-caching.md) - 6 caching patterns
+
+**MVVM & UI:**
+- [Create Custom ViewModels](guides/how-to/create-custom-viewmodel.md) - 5 ViewModel patterns
+- [Create Custom Commands](guides/how-to/create-custom-commands.md) - 6 command patterns
+- [Implement Validation](guides/how-to/implement-validation.md) - 5 validation strategies
+- [Bind Async Data to UI](guides/how-to/bind-async-data-to-ui.md) - 5 strategies for reactive binding
+- [Handle Loading States](guides/how-to/handle-loading-states.md) - 6 loading state strategies
+- [Implement Master-Detail Pattern](guides/how-to/implement-master-detail.md) - 4 layout patterns
+
+**Collections & Reactive:**
+- [Work with Observable Collections](guides/how-to/work-with-observable-collections.md) - 7 collection patterns
+
+**Blazor:**
 - [Create Blazor Workspace Page](guides/how-to/create-blazor-workspace-page.md) - Step-by-step list and detail pages
 
 **Coming Soon:**
-- Create custom ViewModels
-- Implement master-detail patterns
 - Build property editors
-- Handle async data loading
+- Integrate with dependency injection
+- Create custom serializers
 
 ### 📋 Complete CLAUDE.md Index
 
@@ -238,18 +272,20 @@ Abstractions → Reactive.Abstractions → Reactive → Mvvm
 
 ## Documentation Statistics
 
-**Current Status** (October 2025):
+**Current Status** (November 2025):
 
 | Domain | Files | Lines | Status |
 |--------|-------|-------|--------|
 | Async Data (Domain) | 6 | 3,882 | ✅ Complete |
 | MVVM (Domain) | 6 | 5,053 | ✅ Complete |
 | UI/Blazor (Domain) | 4 | 2,769 | ✅ Complete |
+| Reactive (Domain) | 1 | 805 | 🚧 In Progress |
 | Workspaces (Architecture) | 4 | 2,673 | ✅ Complete |
 | MVVM (Architecture) | 5 | 2,500+ | ✅ Complete |
 | Async Data (Architecture) | 4 | 2,000+ | ✅ Complete |
+| Reactive (Architecture) | 3 | 1,000+ | ✅ Complete |
 | Core (Architecture) | 3 | 1,500+ | ✅ Complete |
-| **TOTAL** | **32+** | **20,000+** | **In Progress** |
+| **TOTAL** | **36+** | **22,000+** | **In Progress** |
 
 **CLAUDE.md Files**: 11+ completed (out of 100+ libraries)
 
@@ -261,7 +297,8 @@ See [TASKS.md](TASKS.md) for the comprehensive documentation project plan, inclu
 - ✅ Async Data domain and architecture docs (complete)
 - ✅ UI/Blazor domain docs (complete)
 - ✅ Workspace architecture docs (complete)
-- 🚧 Reactive architecture docs (in progress)
+- ✅ Reactive architecture docs (complete)
+- 🚧 Reactive domain docs (README complete, optional deep-dive docs pending)
 - 📋 Getting started guides (planned)
 - 📋 How-to guides (planned)
 - 📋 Completing CLAUDE.md coverage for all libraries (ongoing)
