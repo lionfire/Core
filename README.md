@@ -10,16 +10,45 @@ Ambitious set of mini-frameworks being developed for other LionFire packages, mo
 
 ## 📚 Documentation
 
-**Comprehensive documentation is now available!** Over 20,000 lines covering async data access, MVVM patterns, Blazor UI components, and workspace architecture.
+**Comprehensive documentation is now available!** Over 20,000 lines covering async data access, MVVM patterns, Blazor UI components, workspace architecture, and more.
 
-### Quick Start Guides
-- **[Blazor UI Development](docs/ui/README.md)** - Building reactive Blazor apps ⭐ START HERE
-- **[Async Data Access](docs/data/async/README.md)** - IGetter, ISetter, IValue patterns
-- **[MVVM Patterns](docs/mvvm/README.md)** - ViewModels and reactive binding
-- **[Workspace System](docs/architecture/workspaces/README.md)** - Multi-workspace applications
+### 🚀 Quick Start Guides
 
-### Complete Documentation Index
-📖 **[docs/README.md](docs/README.md)** - Full documentation navigation and index
+Choose your path based on what you're building:
+
+- **[Blazor UI Development](docs/ui/README.md)** ⭐ Building reactive Blazor apps (START HERE for UI)
+- **[Async Data Access](docs/data/async/README.md)** - IGetter, ISetter, IValue patterns for async operations
+- **[MVVM Patterns](docs/mvvm/README.md)** - ViewModels, reactive binding, and data integration
+- **[Workspace System](docs/workspaces/README.md)** - User-centric multi-workspace applications
+
+### 📖 Documentation Areas
+
+**Domain Documentation** (Cross-library guides and tutorials):
+- [MVVM Domain](docs/mvvm/) - Complete MVVM guide (5,053 lines, 6 docs)
+- [Async Data Domain](docs/data/async/) - Data access patterns (3,882 lines, 6 docs)
+- [UI/Blazor Domain](docs/ui/) - Blazor component patterns (2,769 lines, 4 docs)
+- [VOS Domain](docs/data/vos/) - Virtual Object System reference
+- [Workspace Domain](docs/workspaces/) - Workspace system guide
+
+**Architecture Documentation** (System design and layer relationships):
+- [Core Architecture](docs/architecture/README.md) - Repository design philosophy and layers
+- [MVVM Architecture](docs/architecture/mvvm/) - MVVM system design (5 docs)
+- [Async Data Architecture](docs/architecture/data/async/) - Data access architecture (4 docs)
+- [Workspace Architecture](docs/architecture/workspaces/) - Workspace system design (4 docs)
+- [Reactive Architecture](docs/architecture/reactive/) - Reactive patterns (in progress)
+
+**Library Reference** (Per-library technical docs):
+- See individual [CLAUDE.md files](docs/README.md#-complete-claudemd-index) in `src/*/CLAUDE.md`
+
+### 📋 Complete Documentation Index
+📖 **[docs/README.md](docs/README.md)** - Full documentation navigation, examples, and library index
+
+### 🎯 Common Tasks
+
+- **Building a Blazor workspace app?** → [Create Blazor Workspace Page](docs/guides/how-to/create-blazor-workspace-page.md)
+- **Need to understand data access?** → [Async Data Overview](docs/data/async/README.md) → [Getters & Setters](docs/data/async/getters-setters.md)
+- **Working with ViewModels?** → [MVVM Overview](docs/mvvm/README.md) → [ViewModels Guide](docs/mvvm/viewmodels-guide.md)
+- **Want the big picture?** → [Architecture Overview](docs/architecture/README.md) → [Layers Guide](docs/architecture/layers.md)
 
 
 ---
