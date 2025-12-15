@@ -217,9 +217,10 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageVersion Include="Serilog.Sinks.File.Archive" Version="1.0.6" />
     <PackageVersion Include="Serilog.Sinks.File.GZip" Version="1.0.2" />
-    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.3.0" />
+    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.3.1" />
     <PackageVersion Include="Serilog.Sinks.Http" Version="9.1.1" />
     <PackageVersion Include="Serilog.Sinks.Loki" Version="4.0.0-beta3" />
+    <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageVersion Include="Serilog.Sinks.TestCorrelator" Version="4.0.0" />
     <PackageVersion Include="SerilogTraceListener" Version="3.2.0" />
     <PackageVersion Include="SharpZipLib" Version="1.4.2" />
