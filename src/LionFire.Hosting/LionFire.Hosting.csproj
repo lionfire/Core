@@ -30,6 +30,7 @@
 	  <PackageReference Include="Serilog.Sinks.File.Archive" />
 	  <PackageReference Include="Serilog.Sinks.File.GZip" />
 	  <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
+	  <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
 	  <!--<PackageReference Include="Serilog.Sinks.Http" />-->
 	  <PackageReference Include="SerilogTraceListener" />
 	  <PackageReference Include="System.CommandLine" />
