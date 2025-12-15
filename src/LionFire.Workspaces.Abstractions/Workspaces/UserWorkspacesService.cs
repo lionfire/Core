@@ -33,6 +33,8 @@ public class UserWorkspacesService
 
     #region Properties
 
+    #region UserWorkspaces
+
     public IReference? UserWorkspaces { get; set; }
 
     #region REVIEW - Avoids Vos / Reference resolution, allows direct use of filesystem
@@ -42,6 +44,24 @@ public class UserWorkspacesService
         get => (UserWorkspaces as FileReference)?.Path;
         set => UserWorkspaces = new FileReference(value);
     }
+
+    #endregion
+
+    #endregion
+
+    #region UserData
+
+    public IReference? UserData { get; set; }
+
+    #region REVIEW - Avoids Vos / Reference resolution, allows direct use of filesystem
+
+    public string? UserDataDir
+    {
+        get => (UserData as FileReference)?.Path;
+        set => UserData = new FileReference(value);
+    }
+
+    #endregion
 
     #endregion
 

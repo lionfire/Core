@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Kernel;
 using LionFire.Data.Collections;
+using LionFire.ExtensionMethods;
 using LionFire.Ontology;
 using LionFire.Reactive.Persistence;
 using LionFire.Reflection;
@@ -44,7 +45,35 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
     public Func<TKey, Optional<TValue>, TValueVM>? VMFactory { get; set; }
     public Func<TKey, Optional<TValue>, TValueVM> EffectiveVMFactory => VMFactory ?? DefaultFactory;
 
+    /// <summary>
+    /// Action to update an existing VM when the source value changes.
+    /// This enables lazy-loading scenarios where VMs are created initially with null values,
+    /// then updated when the actual value loads.
+    /// </summary>
+    public Action<TValueVM, Optional<TValue>>? VMUpdateAction { get; set; }
+    public Action<TValueVM, Optional<TValue>> EffectiveVMUpdateAction => VMUpdateAction ?? DefaultUpdateAction;
+
     static Func<TKey, Optional<TValue>, TValueVM> DefaultFactory = (k, v) => (TValueVM)Activator.CreateInstance(typeof(TValueVM), k, v.HasValue ? v.Value : null)!;
+
+    /// <summary>
+    /// Default update action that sets the Value property on VMs that have a settable Value property.
+    /// </summary>
+    static Action<TValueVM, Optional<TValue>> DefaultUpdateAction = (vm, val) =>
+    {
+        // Try to set Value property if it exists and is settable
+        var valueProperty = typeof(TValueVM).GetProperty("Value");
+        if (valueProperty != null && valueProperty.CanWrite)
+        {
+            valueProperty.SetValue(vm, val.HasValue ? val.Value : null);
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                $"ViewModel type '{typeof(TValueVM).Name}' does not have a settable 'Value' property. " +
+                $"You must provide a custom VMUpdateAction to handle value updates, or ensure your ViewModel " +
+                $"has a public settable 'Value' property of type '{typeof(TValue).Name}' or 'Optional<{typeof(TValue).Name}>'.");
+        }
+    };
 
     #endregion
 
@@ -90,18 +119,30 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
                 //dataWriter = reader as IObservableReaderWriter<TKey, TValue>;
 
                 Items = data.Values.Connect()
-                    .Transform((val, key) =>
-                    {
-                        try
+                    .TransformWithInlineUpdate(
+                        transformFactory: (val, key) =>
                         {
-                            return EffectiveVMFactory(key, val);
-                        }
-                        catch (Exception ex)
+                            try
+                            {
+                                return EffectiveVMFactory(key, val);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("ERROR: VMFactory failed: " + ex.ToString()); // TODO Log or throw somehow
+                                throw;
+                            }
+                        },
+                        updateAction: (vm, val) =>
                         {
-                            Debug.WriteLine("ERROR: VMFactory failed: " + ex.ToString()); // TODO Log or throw somehow
-                            throw;
-                        }
-                    })
+                            try
+                            {
+                                EffectiveVMUpdateAction(vm, val);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("ERROR: VMUpdateAction failed: " + ex.ToString()); // TODO Log or throw somehow
+                            }
+                        })
                     .AsObservableCache()
                     .DisposeWith(readerDisposables);
 

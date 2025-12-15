@@ -114,6 +114,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
             if (userDir != null)
             {
+                userWorkspacesService.UserDataDir = userDir;
                 userWorkspacesService.UserWorkspacesDir = Path.Combine(userDir, "Workspaces");
                 Debug.WriteLine($"[WorkspaceLayoutVM] Set UserWorkspacesDir to: {userWorkspacesService.UserWorkspacesDir}");
             }

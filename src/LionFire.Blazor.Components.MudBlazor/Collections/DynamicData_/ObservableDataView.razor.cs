@@ -43,6 +43,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     : IAsyncDisposable
     , IComponentized
     , IGetsOrCreatesByType
+    , IServiceProvider
     where TKey : notnull
     where TValue : notnull
     where TValueVM : notnull
@@ -116,18 +117,33 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     [CascadingParameter(Name = "AmbientDataServices")]
     public IServiceProvider? AmbientDataServices { get; set; }
 
+
+    public object? GetService(Type serviceType)
+    {
+        foreach (var sp in (IServiceProvider?[])[AmbientDataServices, DataServiceProvider, ServiceProvider])
+        {
+            var service = sp?.GetService(serviceType);
+            if (service != null) return service;
+        }
+        return null;
+    }
+
     /// <summary>
     /// If writable, supply IObservableReaderWriter here
     /// </summary>
     [Parameter]
-    public IObservableReader<TKey, TValue>? Data { get; set; }
+    public IObservableReader<TKey, TValue>? DataReader { get; set; }
+
+    [Parameter]
+    public IObservableCache<TValue, TKey>? DataObservable { get; set; }
+    private ObservableCacheReader<TKey, TValue>? observableCacheReader;
+    private IObservableCache<TValue, TKey>? lastDataObservable;
 
     //public IObservableReader<TKey, TValue>? EffectiveData { get; private set; }
     //public IObservableReaderWriter<TKey, TValue>? EffectiveDataWriter { get; private set; }
 
-    IObservableReaderWriter<TKey, TValue>? FallbackReaderWriter => EffectiveDataServiceProvider.GetService<IObservableReaderWriter<TKey, TValue>>();
-    IObservableReader<TKey, TValue>? FallbackReader => EffectiveDataServiceProvider.GetService<IObservableReader<TKey, TValue>>();
-
+    IObservableReaderWriter<TKey, TValue>? FallbackReaderWriter => this.GetService<IObservableReaderWriter<TKey, TValue>>();
+    IObservableReader<TKey, TValue>? FallbackReader => this.GetService<IObservableReader<TKey, TValue>>();
 
     [Parameter]
     public TimeSpan? PollDelay { get; set; }
@@ -342,8 +358,12 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     }
 
     IDisposable? itemsSubscription = null;
+
     protected override async Task OnParametersSetAsync()
     {
+        itemsSubscription?.Dispose();
+        itemsSubscription = null;
+
         await base.OnParametersSetAsync();
 
         ArgumentNullException.ThrowIfNull(ViewModel);
@@ -358,10 +378,32 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
         //public IObservableReader<string, TValue>? Data { get; set; }
 
-        var effectiveData = Data ?? FallbackReaderWriter ?? FallbackReader;
+        var effectiveData = DataReader;
+
+        itemsSubscription = effectiveData.ListenAllKeys();
+
+        if (effectiveData == null && DataObservable != null)
+        {
+            if (observableCacheReader == null || lastDataObservable != DataObservable)
+            {
+                observableCacheReader?.Dispose();
+                observableCacheReader = new ObservableCacheReader<TKey, TValue>(DataObservable);
+                lastDataObservable = DataObservable;
+            }
+            effectiveData = observableCacheReader;
+        }
+        else
+        {
+            observableCacheReader?.Dispose();
+            observableCacheReader = null;
+            lastDataObservable = null;
+        }
+
+        effectiveData ??= FallbackReaderWriter ?? FallbackReader;
+
         if (!ReferenceEquals(ViewModel!.Data, effectiveData))
         {
-            ViewModel!.Data = effectiveData;
+            ViewModel.Data = effectiveData;
         }
 
         ViewModel.ItemsChanged.Subscribe(_ => InvokeAsync(StateHasChanged));
@@ -521,6 +563,9 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
             }
         }
 
+        observableCacheReader?.Dispose();
+        observableCacheReader = null;
+
         var vm = ViewModel;
         if (vm != null)
         {
@@ -621,5 +666,25 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 //{
 //    [Parameter]
 //    public IEnumerable<TValue>? Items { get; set; }
+//}
+
+
+//public class CompositeServiceProvider : IServiceProvider
+//{
+//    public CompositeServiceProvider(IEnumerable<IServiceProvider> serviceProviders)
+//    {
+//        ServiceProviders.AddRange(serviceProviders);
+//    }                                                                                                                     
+
+//    public List<IServiceProvider> ServiceProviders { get; } = new();
+//    public object? GetService(Type serviceType)
+//    {
+//        foreach (var sp in ServiceProviders)
+//        {
+//            var service = sp.GetService(serviceType);
+//            if (service != null) return service;
+//        }
+//        return null;
+//    }
 //}
 

@@ -34,6 +34,7 @@ public abstract class ObservableReaderBase<TKey, TValue> //: IObservableReader<T
 
     private void OnWrite(WriteOperation<TKey, TValue> writeOperation)
     {
+        // REVIEW - lock(pendingWritesLock) needed in more places?
         var originalExpiry = DateTime.UtcNow + TimeSpan.FromMilliseconds(millisecondsToWaitForWriteCompletion);
         pendingWrites?.AddOrUpdate(writeOperation.Key, originalExpiry, (_, _) => originalExpiry);
 
