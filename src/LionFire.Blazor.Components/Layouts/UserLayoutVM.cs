@@ -76,7 +76,7 @@ public partial class UserLayoutVM : ReactiveObject, IDisposable
 
     protected virtual async ValueTask OnUserChanged()
     {
-        await DoConfigureUserServices();
+        await BuildUserServices();
     }
 
     #region User Services
@@ -84,7 +84,7 @@ public partial class UserLayoutVM : ReactiveObject, IDisposable
     [ReactiveUI.SourceGenerators.Reactive]
     private IServiceProvider? _userServices;
 
-    private async ValueTask DoConfigureUserServices()
+    private async ValueTask BuildUserServices()
     {
         var services = new ServiceCollection();
 
