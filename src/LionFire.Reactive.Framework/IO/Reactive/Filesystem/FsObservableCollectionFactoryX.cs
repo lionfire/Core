@@ -51,21 +51,23 @@ public static class FsObservableCollectionFactoryX
             };
 
             DirectoryTypeOptions DirectoryTypeOptions;
+            HjsonFsDirectoryReaderRx<string, TValue> r;
+            HjsonFsDirectoryWriterRx<string, TValue> w;
             try
             {
                 DirectoryTypeOptions = new DirectoryTypeOptions
                 {
                     ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
                 };
+                DirectoryTypeOptions.SecondExtension = DirectoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
+
+                r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
+                w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
             }
             catch (ObjectDisposedException)
             {
-                return null!; // NULLABILITY OVERRIDE
+                return null!; // NULLABILITY OVERRIDE - ServiceProvider disposed during async race
             }
-            DirectoryTypeOptions.SecondExtension = DirectoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
-
-            var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
-            var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
             return sp =>
             {
                 var c = new ObservableReaderWriterFromComponents<string, TValue>(r, w);
