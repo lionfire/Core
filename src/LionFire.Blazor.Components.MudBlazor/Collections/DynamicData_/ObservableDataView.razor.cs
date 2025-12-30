@@ -578,7 +578,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
         var vm = ViewModel;
         if (vm != null)
         {
-            vm = null;
+            ViewModel = null;
             if (vm is IAsyncDisposable asyncDisposable)
             {
                 await asyncDisposable.DisposeAsync();
