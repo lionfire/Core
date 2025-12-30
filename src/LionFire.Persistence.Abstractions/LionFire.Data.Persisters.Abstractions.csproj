@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework> 
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
     <Configurations>Debug;Release</Configurations>
-		<!--Shouldn't be needed-->
-    <!--<EnablePreviewFeatures>true</EnablePreviewFeatures>-->
+    <Description>Persistence abstractions for data storage backends. Defines persister interfaces for read/write operations.</Description>
+    <PackageTags>persistence abstractions storage</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

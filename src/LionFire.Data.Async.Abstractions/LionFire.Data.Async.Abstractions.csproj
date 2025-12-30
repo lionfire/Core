@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-		<RootNamespace>LionFire</RootNamespace>
-		<Configurations>Debug;Release</Configurations>
+    <RootNamespace>LionFire</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <Description>Asynchronous data access patterns with support for caching, lazy loading, polling, and observable operations.</Description>
+    <PackageTags>async data abstractions observable</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

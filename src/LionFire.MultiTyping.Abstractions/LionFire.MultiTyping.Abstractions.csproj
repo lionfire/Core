@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework> 
-    <RootNamespace>LionFire</RootNamespace> 
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <RootNamespace>LionFire</RootNamespace>
     <Configurations>Debug;Release</Configurations>
+    <Description>Abstractions for multi-typing pattern, allowing objects to present multiple type interfaces dynamically.</Description>
+    <PackageTags>multityping abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

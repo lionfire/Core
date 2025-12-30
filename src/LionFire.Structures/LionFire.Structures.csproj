@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-		<VersionSuffix></VersionSuffix>
-		<TargetFrameworks>net9.0</TargetFrameworks>
+		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 		<RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
     <PackageTags>collections structures utility</PackageTags>
     <Configurations>Debug;Release</Configurations>
+    <Description>Collection types, data structures, and structural patterns for LionFire applications. Includes collection adapters, hierarchical collections, acquisition patterns, and result types.</Description>
   </PropertyGroup>
 
   <ItemGroup>

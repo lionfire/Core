@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net9.0</TargetFramework>
+	  <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 	  <LangVersion>latest</LangVersion>
 	  <Nullable>enable</Nullable>
-		<Version>1.0.1</Version>
 		<Configurations>Debug;Release</Configurations>
+    <Description>Opinionated .NET hosting framework with Serilog logging, System.CommandLine integration, and reactive patterns. Provides a batteries-included approach to building hosted applications.</Description>
+    <PackageTags>hosting serilog commandline reactive</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

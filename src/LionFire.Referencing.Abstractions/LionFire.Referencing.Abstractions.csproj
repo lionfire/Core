@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-		<VersionSuffix></VersionSuffix>
-		
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <AssemblyName>LionFire.Referencing.Abstractions</AssemblyName>
     <PackageId>LionFire.Referencing.Abstractions</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -11,8 +9,9 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
-	<!--<EnablePreviewFeatures>True</EnablePreviewFeatures>-->
-	<Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release</Configurations>
+    <Description>URL/URI handling and custom schema support for LionFire reference systems. Foundation for the Handle and Persistence layers.</Description>
+    <PackageTags>referencing uri url</PackageTags>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

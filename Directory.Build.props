@@ -14,8 +14,8 @@
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-		<VersionPrefix>7.0.0</VersionPrefix>
-		<VersionSuffix>alpha</VersionSuffix>
+		<VersionPrefix>8.0.0</VersionPrefix>
+		<VersionSuffix>preview</VersionSuffix>
 			
 		<Authors>Jared Thirsk</Authors>
 		<Copyright>2010-2025 Jared Thirsk</Copyright>

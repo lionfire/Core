@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release</Configurations>
+    <Description>Extensions for Microsoft.Extensions.Hosting providing additional hosting utilities and patterns.</Description>
+    <PackageTags>hosting extensions</PackageTags>
   </PropertyGroup>
 
 	<ItemGroup>

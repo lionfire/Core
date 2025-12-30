@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0</TargetFrameworks>
+		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>LionFire.Hosting</RootNamespace>
 		<Configurations>Debug;Release</Configurations>
+		<Description>System.CommandLine integration for LionFire hosting. Enables command-line parsing and hosting integration.</Description>
+		<PackageTags>hosting commandline cli</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>

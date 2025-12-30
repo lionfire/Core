@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 		<RootNamespace>LionFire</RootNamespace>
 		<Configurations>Debug;Release</Configurations>
+    <Description>Abstractions for LionFire hosting extensions including LionFireHostBuilder and hosting lifecycle interfaces.</Description>
+    <PackageTags>hosting abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
