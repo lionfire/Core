@@ -1,15 +1,13 @@
 ﻿using LionFire.StateMachines.Class;
-using System;
 
-namespace LionFire.Trading.Feeds
+namespace LionFire.Hosting;
+
+[Flags]
+public enum HostedServiceState
 {
-    [Flags]
-    public enum HostedServiceState
-    {
-        [State(StartingState = true)]
-        Stopped = 1 << 0,
-        Starting = 1 << 1,
-        Running = 1 << 2,
-        Stopping = 1 << 3,
-    }
+    [State(StartingState = true)]
+    Stopped = 1 << 0,
+    Starting = 1 << 1,
+    Running = 1 << 2,
+    Stopping = 1 << 3,
 }

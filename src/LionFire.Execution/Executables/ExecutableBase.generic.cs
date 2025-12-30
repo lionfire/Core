@@ -1,26 +1,24 @@
-﻿using LionFire.MultiTyping;
-using LionFire.StateMachines;
+﻿using LionFire.StateMachines;
 using LionFire.StateMachines.Class;
 
-namespace LionFire.Execution.Executables
+namespace LionFire.Execution.Executables;
+
+public class ExecutableBase<TState, TTransition>
 {
-    public class ExecutableBase<TState, TTransition>
+    #region State Machine
+
+    public IStateMachine<TState, TTransition> StateMachine
     {
-        #region State Machine
-
-        public IStateMachine<TState, TTransition> StateMachine
+        get
         {
-            get
+            if (stateMachine == null)
             {
-                if (stateMachine == null)
-                {
-                    stateMachine = StateMachine<TState, TTransition>.Create(this);
-                }
-                return stateMachine;
+                stateMachine = StateMachine<TState, TTransition>.Create(this);
             }
+            return stateMachine;
         }
-        private IStateMachine<TState, TTransition> stateMachine;
-
-        #endregion
     }
+    private IStateMachine<TState, TTransition> stateMachine;
+
+    #endregion
 }
