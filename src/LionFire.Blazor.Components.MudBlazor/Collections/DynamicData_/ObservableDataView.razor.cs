@@ -380,7 +380,6 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
         var effectiveData = DataReader;
 
-        itemsSubscription = effectiveData.ListenAllKeys();
 
         if (effectiveData == null && DataObservable != null)
         {
@@ -404,6 +403,16 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
         if (!ReferenceEquals(ViewModel!.Data, effectiveData))
         {
             ViewModel.Data = effectiveData;
+        }
+
+        if (effectiveData != null)
+        {
+            itemsSubscription = effectiveData.ListenAllKeys();
+        }
+        else
+        {
+            itemsSubscription?.Dispose();
+            itemsSubscription = null;
         }
 
         ViewModel.ItemsChanged.Subscribe(_ => InvokeAsync(StateHasChanged));
