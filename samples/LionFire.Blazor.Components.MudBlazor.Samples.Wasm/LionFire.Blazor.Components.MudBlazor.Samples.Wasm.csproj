@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LionFire.Blazor.Components.MudBlazor_.Samples.Wasm</RootNamespace>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release</Configurations>

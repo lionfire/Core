@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<!--<TargetFrameworks>netstandard2.0;net9.0</TargetFrameworks>-->
-		<!--<TargetFramework>net9.0</TargetFramework>-->
-		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+		<!--<TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>-->
+		<!--<TargetFramework>net10.0</TargetFramework>-->
+		<TargetFrameworks>net10.0;net10.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<RootNamespace>LionFire</RootNamespace>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>LionFire.Blazor.Components.MudBlazor_.Samples.Client</RootNamespace>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release</Configurations>
