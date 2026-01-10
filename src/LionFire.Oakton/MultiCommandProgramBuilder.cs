@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
-using Oakton;
-using Oakton.Descriptions;
+using JasperFx.CommandLine;
+using JasperFx.CommandLine.Descriptions;
 
 namespace LionFire.Oakton;
 
