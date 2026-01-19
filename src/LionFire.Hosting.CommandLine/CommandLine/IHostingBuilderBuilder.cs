@@ -80,12 +80,13 @@ public static class IHostingBuilderBuilderX
                 .Build(program, invocationContext)
                 .RunAsync(cancellationToken);
 
-            return 0;
+            // Respect Environment.ExitCode if set by the hosted task
+            return Environment.ExitCode != 0 ? Environment.ExitCode : 0;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
-            return 1;
+            return Environment.ExitCode != 0 ? Environment.ExitCode : 1;
         }
     }
 
