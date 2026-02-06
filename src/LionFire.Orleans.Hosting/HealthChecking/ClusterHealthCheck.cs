@@ -2,6 +2,7 @@
 using Orleans;
 using System.Threading;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 using System;
 using Orleans.Runtime;
 using System.Linq;
@@ -19,18 +20,19 @@ public class ClusterHealthCheck : IHealthCheck
 {
     private readonly IClusterClient client;
     private readonly IOptionsMonitor<ClusterHealthOptions> optionsMonitor;
+    private readonly IHostApplicationLifetime lifetime;
 
-    public ClusterHealthCheck(IClusterClient client, IOptionsMonitor<ClusterHealthOptions> optionsMonitor)
+    public ClusterHealthCheck(IClusterClient client, IOptionsMonitor<ClusterHealthOptions> optionsMonitor, IHostApplicationLifetime lifetime)
     {
         this.client = client;
         this.optionsMonitor = optionsMonitor;
+        this.lifetime = lifetime;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        //return Task.FromResult(HealthCheckResult.Unhealthy("TODO"));
-
-        ////throw new NotImplementedException();//What happened to IsUnavailable?
+        if (lifetime.ApplicationStopping.IsCancellationRequested)
+            return HealthCheckResult.Unhealthy("Application is shutting down.");
 
         var manager = client.GetGrain<IManagementGrain>(0);
         try
@@ -38,9 +40,6 @@ public class ClusterHealthCheck : IHealthCheck
             var hosts = await manager.GetHosts();
             var activeCount = hosts.Values.Where(x => x == SiloStatus.Active).Count();
             var deadCount = hosts.Values.Where(x => x == SiloStatus.Dead).Count();
-
-            //if(deadCount > 0)
-            //    return HealthCheckResult.Degraded($"{deadCount} dead silo(s)");
 
             var options = optionsMonitor.CurrentValue;
 
