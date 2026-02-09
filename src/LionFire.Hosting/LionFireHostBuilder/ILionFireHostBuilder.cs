@@ -120,20 +120,18 @@ public class LocalPortScanner
 
     public bool ArePortsFree(int startPort, int endPortExclusive)
     {
-        var usedPorts = new List<int>();
-
         for (int port = startPort; port < endPortExclusive; port++)
         {
-            if (tcpConnections.Any(c => c.LocalEndPoint.Port == port) ||
+            // Only check active listeners and established connections.
+            // TIME_WAIT connections are safe to rebind with SO_REUSEADDR.
+            if (tcpConnections.Any(c => c.LocalEndPoint.Port == port && c.State != TcpState.TimeWait) ||
                 tcpListeners.Any(l => l.Port == port) ||
                 udpListeners.Any(l => l.Port == port))
             {
                 return false;
-                //usedPorts.Add(port);
             }
         }
         return true;
-        //return usedPorts;
     }
 
 }
