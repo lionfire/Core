@@ -10,7 +10,7 @@ This is the **LionFire.Core** monorepo - a collection of mini-frameworks and too
 
 ## Important: Windows WSL2 Environment
 
-This codebase is on a Windows filesystem mounted in WSL2. **Always use `dotnet-win` instead of `dotnet`** for all .NET operations:
+This codebase is on a Windows filesystem mounted in WSL2. **Always use `dotnet-win` instead of `dotnet`** for all .NET operations when mounted under /mnt/c:
 
 ```bash
 dotnet-win build
@@ -20,6 +20,17 @@ dotnet-win run
 ```
 
 Use `git_win` for git operations that require authentication (e.g., `git_win push`).
+
+## Important: Linux WSL2 Environment
+
+Use these inside linux (WSL2):
+
+```bash
+BuildRoot=. dotnet build
+BuildRoot=. dotnet restore
+BuildRoot=. dotnet run
+
+```
 
 ## Project Structure
 
