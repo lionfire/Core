@@ -34,6 +34,11 @@
 	</ItemGroup>
 
   <ItemGroup>
+    <!-- Lean tier: canonical InlineSelector + lean siblings (AutoRefreshButton,
+         EnumerableViewComponent) now live here so MudBlazor-only consumers can take
+         them without the heavy graph. Referenced back so this project stays single-
+         source and its samples keep resolving LionFire.Blazor.Components.MudBlazor_. -->
+    <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor.Lean\LionFire.Blazor.Components.MudBlazor.Lean.csproj" />
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
     <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />

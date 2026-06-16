@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <!--
+    Lean tier of LionFire.Blazor.Components.MudBlazor.
+
+    A deliberately thin Razor class library that carries only the components whose
+    own bodies depend on nothing more than MudBlazor + Microsoft.AspNetCore.Components
+    (+ Microsoft.Extensions.Logging, which those already pull transitively). It exists
+    so consumers that cannot tolerate the heavy library's transitive graph
+    (ReactiveUI / Radzen / DynamicData / Orleans / CodeAnalysis / 10 LionFire project
+    refs) can still take the canonical InlineSelector and its lean siblings.
+
+    Namespace is kept as LionFire.Blazor.Components.MudBlazor_ (note trailing
+    underscore) so existing references in the heavy project, its samples, and external
+    consumers (e.g. axi-web) resolve unchanged. The heavy project ProjectReferences
+    this one, keeping /src/Core single-source.
+  -->
+
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <RootNamespace>LionFire.Blazor.Components.MudBlazor_</RootNamespace>
+    <Nullable>enable</Nullable>
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="MudBlazor" />
+  </ItemGroup>
+
+</Project>
