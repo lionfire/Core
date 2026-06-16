@@ -8,9 +8,6 @@
 
 <PageTitle>Tmux PoC - Real Integration</PageTitle>
 
-<link rel="stylesheet" href="../LionFire.Blazor.Components.Samples/Components/Tmux/TmuxTreeView.razor.css" />
-<link rel="stylesheet" href="../LionFire.Blazor.Components.Samples/Components/Utility/TerminalViewer.razor.css" />
-
 <div class="vscode-layout" data-theme="dark">
     <!-- Activity Bar (Far Left) -->
     <aside class="vscode-activity-bar">
@@ -111,14 +108,14 @@
                 <div class="terminal-input-area">
                     <div class="input-container">
                         <div class="input-prompt">$</div>
-                        <input type="text"
-                               class="terminal-input"
-                               placeholder="Type command and press Enter to send to tmux window..."
-                               @bind="inputText"
-                               @bind:event="oninput"
-                               @onkeydown="HandleKeyDown"
-                               disabled="@isSending"
-                               autofocus />
+                        <textarea class="terminal-input"
+                                  rows="1"
+                                  placeholder="Type command and press Enter to send (Shift+Enter for newline)..."
+                                  @bind="inputText"
+                                  @bind:event="oninput"
+                                  @onkeydown="HandleKeyDown"
+                                  disabled="@isSending"
+                                  autofocus></textarea>
                         <button class="send-btn @(string.IsNullOrWhiteSpace(inputText) ? "disabled" : "")"
                                 @onclick="SendInput"
                                 disabled="@(string.IsNullOrWhiteSpace(inputText) || isSending)"
@@ -329,10 +326,12 @@
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(inputText) && !isSending)
+        if (e.Key == "Enter" && !e.ShiftKey && !string.IsNullOrWhiteSpace(inputText) && !isSending)
         {
+            e.PreventDefault();
             await SendInput();
         }
+        // Shift+Enter allows newline in textarea (default behavior)
     }
 
     private async Task SendInput()
