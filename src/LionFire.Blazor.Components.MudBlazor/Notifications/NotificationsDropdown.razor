@@ -1,15 +1,7 @@
 ﻿@inject LionFire.Activities.IActivitiesTracker Tracker
 @using LionFire.Activities
 
-@*<RadzenCard Style="margin-bottom: 200px; width: fit-content; min-width: 300px;" Class="mt-5 mx-auto text-right">*@
-<RadzenProfileMenu>
-    @*<Template>
-    <div style="color:white;">Hello</div>
-    <MudIcon Icon=@Icons.Material.Filled.Alarm/>
-    </Template>*@
-    <ChildContent>
-
-        <MudTabs Elevation="2" Rounded="true" Centered="true">
+<MudTabs Elevation="2" Rounded="true" Centered="true">
             <MudTabPanel Icon="@Icons.Material.Filled.Api" BadgeData='"live"' BadgeColor="Color.Info">
                 <ChildContent>
                     <div>
@@ -23,7 +15,6 @@
                             <div>
                                 <MudLink @onclick=ClearAll>All</MudLink>
                             </div>
-                            @*<RadzenProfileMenuItem Text="Clear all" onclick=@(()=>Tracker.ClearHistory()) Icon="close"></RadzenProfileMenuItem>*@
                         </div>
 
                         <MudList T="IActivity">
@@ -50,7 +41,6 @@
                             <div>
                                 <MudLink @onclick=ClearAll>All</MudLink>
                             </div>
-                            @*<RadzenProfileMenuItem Text="Clear all" onclick=@(()=>Tracker.ClearHistory()) Icon="close"></RadzenProfileMenuItem>*@
                         </div>
                         @foreach (var item in Tracker.RecentlyFinished)
                         {
@@ -66,10 +56,6 @@
 
 
         <MudLink Href="/activities">All</MudLink>
-    </ChildContent>
-
-</RadzenProfileMenu>
-@*</RadzenCard>*@
 
 
 @code {
