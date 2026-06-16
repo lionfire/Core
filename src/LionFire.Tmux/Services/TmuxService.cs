@@ -251,9 +251,10 @@ public class TmuxService : ITmuxService
             // Escape special characters and quotes
             var escapedKeys = keys.Replace("\"", "\\\"").Replace("'", "\\'");
 
-            // Build the send-keys command
-            var keysToSend = sendEnter ? $"{escapedKeys} Enter" : escapedKeys;
-            var args = $"send-keys -t {target} \"{keysToSend}\"";
+            // Build the send-keys command with Enter as a separate key
+            var args = sendEnter
+                ? $"send-keys -t {target} \"{escapedKeys}\" Enter"
+                : $"send-keys -t {target} \"{escapedKeys}\"";
 
             var exitCode = await RunTmuxCommandWithExitCodeAsync(args);
             return exitCode == 0;
