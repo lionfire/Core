@@ -326,12 +326,13 @@
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
+        // Plain Enter sends; Shift+Enter inserts a newline (textarea default).
+        // Blazor Server can't conditionally preventDefault per-keystroke, but
+        // SendInput() clears inputText, so the stray newline never persists.
         if (e.Key == "Enter" && !e.ShiftKey && !string.IsNullOrWhiteSpace(inputText) && !isSending)
         {
-            e.PreventDefault();
             await SendInput();
         }
-        // Shift+Enter allows newline in textarea (default behavior)
     }
 
     private async Task SendInput()

@@ -5,11 +5,35 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+    <!-- This PoC references LionFire.Blazor.Components.Samples, which is itself a
+         Web SDK app. Both projects therefore contribute the framework's static web
+         assets (_framework/blazor.*.js), which the SDK rejects as duplicates. The
+         _RemoveDuplicateFrameworkAssetsFromReference target below drops the copies
+         re-exported by the reference; this property additionally skips the earlier
+         build-time precompression pass, which trips over the same duplicates. -->
+    <DisableBuildCompression>true</DisableBuildCompression>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="../../src/LionFire.Tmux/LionFire.Tmux.csproj" />
     <ProjectReference Include="../LionFire.Blazor.Components.Samples/LionFire.Blazor.Components.Samples.csproj" />
   </ItemGroup>
+
+  <!-- Drop the plain static web assets that the referenced web app re-exports
+       (framework blazor.*.js, bootstrap, favicon, and wwwroot files such as
+       css/vscode-layout.css and js/terminal-viewer.js). Because both projects are
+       Web SDK apps with overlapping wwwroot, these collide and the build fails with
+       "Conflicting assets with the same target path ... from different projects".
+       The PoC serves its own copies of everything it links, so it only needs the
+       reference for its components. Scoped CSS (AssetTraitName 'ScopedCss') is kept
+       so referenced components (e.g. TmuxTreeView) still contribute their styles. -->
+  <Target Name="_RemoveReExportedAssetsFromComponentsSamplesReference"
+          DependsOnTargets="ResolveCoreStaticWebAssets"
+          BeforeTargets="GenerateStaticWebAssetsManifest">
+    <ItemGroup>
+      <StaticWebAsset Remove="@(StaticWebAsset)"
+                      Condition="'%(StaticWebAsset.SourceId)' == 'LionFire.Blazor.Components.Samples' And '%(StaticWebAsset.AssetTraitName)' != 'ScopedCss'" />
+    </ItemGroup>
+  </Target>
 
 </Project>
