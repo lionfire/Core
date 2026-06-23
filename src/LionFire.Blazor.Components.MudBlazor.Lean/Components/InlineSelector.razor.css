@@ -27,28 +27,38 @@
     align-self: flex-start;
 }
 
-.inline-selector-item {
+/* The item/action targets below are rendered by MudButton / MudIconButton — i.e.
+   child components. Blazor's CSS isolation only stamps the scope attribute
+   (b-xxxxxxxxxx) onto markup authored in THIS component, never onto a child
+   component's root element, so a bare `.inline-selector-item { … }` compiles to
+   `.inline-selector-item[b-xxx]` and silently never matches the MudButton's
+   <button>. The selection-highlight animation (the 0.2s opacity/transition and the
+   selected font-weight) therefore went missing for every consumer. Routing through
+   `::deep` from the in-component scoped wrappers (.inline-selector-items /
+   .inline-selector-actions, which DO carry the scope id) makes these rules reach
+   the child markup. */
+.inline-selector-items ::deep .inline-selector-item {
     transition: all 0.2s ease;
     opacity: 0.7;
 }
 
-.inline-selector-item:hover {
+.inline-selector-items ::deep .inline-selector-item:hover {
     opacity: 1;
     background-color: rgba(var(--mud-palette-action-default-hover), 0.08);
 }
 
-.inline-selector-item-selected {
+.inline-selector-items ::deep .inline-selector-item-selected {
     font-weight: 600;
 }
 
-.inline-selector-dropdown-button,
-.inline-selector-create-button {
+.inline-selector-actions ::deep .inline-selector-dropdown-button,
+.inline-selector-actions ::deep .inline-selector-create-button {
     opacity: 0.7;
     transition: opacity 0.2s ease;
 }
 
-.inline-selector-dropdown-button:hover,
-.inline-selector-create-button:hover {
+.inline-selector-actions ::deep .inline-selector-dropdown-button:hover,
+.inline-selector-actions ::deep .inline-selector-create-button:hover {
     opacity: 1;
 }
 
@@ -81,13 +91,13 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Size-specific styles */
-.inline-selector-compact {
+/* Size-specific styles (also applied to the MudButton item — needs ::deep). */
+.inline-selector-items ::deep .inline-selector-compact {
     font-size: 0.75rem;
     min-height: unset;
 }
 
-.inline-selector-square {
+.inline-selector-items ::deep .inline-selector-square {
     min-width: 32px !important;
     min-height: 32px !important;
     padding: 0 !important;
