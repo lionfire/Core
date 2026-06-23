@@ -3,12 +3,21 @@
 
 @namespace LionFire.Blazor.Components.MudBlazor_
 
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
 <div class="inline-selector-container"
      @onmouseenter="OnMouseEnter"
      @onmouseleave="OnMouseLeave"
      style="@($"display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; align-items: flex-start !important; {ContainerStyle}")">
 
-    <div class="inline-selector-items" style="@GetItemsContainerStyle()">
+    <div class="inline-selector-items" @ref="_itemsRef" style="@GetItemsContainerStyle()">
+        @if (UseIndicator)
+        {
+            @* Sliding selection highlight. Parked over the selected button by JS
+               (inlineSelector.js); CSS transitions animate its position & size. *@
+            <div class="inline-selector-indicator" @ref="_indicatorRef" style="@IndicatorStyle"></div>
+        }
         @foreach (var item in DisplayedItems)
         {
             var isSelected = EqualityComparer<TItem>.Default.Equals(item, SelectedItem);
@@ -29,8 +38,8 @@
             else if (Size == InlineSelectorSize.Abbreviated || Size == InlineSelectorSize.SingleLetter)
             {
                 <MudButton
-                    Variant="@(isSelected ? Variant.Filled : Variant.Text)"
-                    Color="@(isSelected && SelectedItemColor == null ? Color.Primary : Color.Default)"
+                    Variant="@GetItemVariant(isSelected)"
+                    Color="@GetItemTextColor(isSelected)"
                     OnClick="@(() => OnItemSelected(item))"
                     Size="@GetMudButtonSize()"
                     Class="@GetItemClass(isSelected)"
@@ -41,8 +50,8 @@
             else
             {
                 <MudButton
-                    Variant="@(isSelected ? Variant.Filled : Variant.Text)"
-                    Color="@(isSelected && SelectedItemColor == null ? Color.Primary : Color.Default)"
+                    Variant="@GetItemVariant(isSelected)"
+                    Color="@GetItemTextColor(isSelected)"
                     OnClick="@(() => OnItemSelected(item))"
                     Size="@GetMudButtonSize()"
                     Class="@GetItemClass(isSelected)"
@@ -167,6 +176,102 @@
 
     private bool isHovering;
     private bool dropdownOpen;
+
+    // --- Sliding selection-highlight indicator -------------------------------
+    // The indicator is an absolutely-positioned box that JS parks over the
+    // selected button; CSS transitions animate its position/size. Until JS has
+    // run (prerender, no-JS, circuit not yet connected) we fall back to the
+    // classic per-button Filled highlight so the selection is never invisible.
+    private ElementReference _itemsRef;
+    private ElementReference _indicatorRef;
+    private IJSObjectReference? _indicatorModule;
+    private bool _jsReady;
+    private TItem? _placedSelection;
+    private bool _hasPlaced;
+
+    // Square mode paints each option its own colour (no single moving highlight
+    // makes sense), so the indicator is limited to the text-button sizes.
+    private bool UseIndicator => Size != InlineSelectorSize.Square;
+
+    private string IndicatorStyle
+    {
+        get
+        {
+            var bg = SelectedItemColor.HasValue
+                ? GetColorValue(SelectedItemColor.Value)
+                : "var(--mud-palette-primary)";
+            return $"background-color: {bg};";
+        }
+    }
+
+    private Variant GetItemVariant(bool isSelected)
+    {
+        // Once the indicator is live it provides the highlight, so the selected
+        // button drops its own Filled background (which would otherwise double up
+        // and refuse to slide). Before then, keep the classic Filled selection.
+        if (UseIndicator && _jsReady)
+            return Variant.Text;
+        return isSelected ? Variant.Filled : Variant.Text;
+    }
+
+    private Color GetItemTextColor(bool isSelected)
+    {
+        // With the indicator active the selected label sits on the primary-coloured
+        // box, so it needs contrast text (forced white via scoped CSS); Color.Inherit
+        // keeps MudButton from imposing primary-on-primary.
+        if (UseIndicator && _jsReady && isSelected)
+            return Color.Inherit;
+        return isSelected && SelectedItemColor == null ? Color.Primary : Color.Default;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!UseIndicator)
+            return;
+
+        try
+        {
+            if (_indicatorModule is null)
+            {
+                _indicatorModule = await JS.InvokeAsync<IJSObjectReference>(
+                    "import",
+                    "./_content/LionFire.Blazor.Components.MudBlazor.Lean/inlineSelector.js");
+                await _indicatorModule.InvokeVoidAsync("init", _itemsRef, _indicatorRef);
+                _placedSelection = SelectedItem;
+                _hasPlaced = true;
+                if (!_jsReady)
+                {
+                    // Re-render so the selected button switches from Filled to the
+                    // indicator-backed Text style now that the indicator is placed.
+                    _jsReady = true;
+                    StateHasChanged();
+                }
+            }
+            else if (!_hasPlaced ||
+                     !EqualityComparer<TItem>.Default.Equals(_placedSelection, SelectedItem))
+            {
+                await _indicatorModule.InvokeVoidAsync("update", _itemsRef, _indicatorRef);
+                _placedSelection = SelectedItem;
+                _hasPlaced = true;
+            }
+        }
+        catch (JSDisconnectedException) { /* circuit gone — nothing to animate */ }
+        catch (ObjectDisposedException) { /* component torn down mid-call */ }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_indicatorModule is not null)
+            {
+                await _indicatorModule.InvokeVoidAsync("dispose", _itemsRef);
+                await _indicatorModule.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException) { }
+    }
 
     private static readonly MudBlazor.Color[] DefaultColors = new[]
     {
@@ -339,8 +444,10 @@
             styles.Add($"min-height: {ItemMinHeight}");
         }
 
-        // Background color for selected items or square mode
-        if (isSelected && SelectedItemColor != null)
+        // Background color for selected items or square mode. When the sliding
+        // indicator is live it owns the selected background (it carries
+        // SelectedItemColor too — see IndicatorStyle), so skip the per-button fill.
+        if (isSelected && SelectedItemColor != null && !(UseIndicator && _jsReady))
         {
             var colorValue = GetColorValue(SelectedItemColor.Value);
             styles.Add($"background-color: {colorValue}");
