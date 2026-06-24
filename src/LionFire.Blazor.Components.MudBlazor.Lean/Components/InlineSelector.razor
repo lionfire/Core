@@ -315,11 +315,21 @@
 
     private async Task OnItemSelected(TItem item)
     {
-        if (!EqualityComparer<TItem>.Default.Equals(SelectedItem, item))
-        {
-            SelectedItem = item;
-            await SelectedItemChanged.InvokeAsync(item);
-        }
+        if (EqualityComparer<TItem>.Default.Equals(SelectedItem, item))
+            return;
+
+        SelectedItem = item;
+
+        // Snap the highlight to the clicked item NOW, before invoking the consumer's
+        // SelectedItemChanged. That handler may do slow work (e.g. a disk/DB load to
+        // fill the page for the new selection); running it first would block the
+        // render and make the pill visibly lag the click. StateHasChanged queues the
+        // re-render and Task.Yield lets it — and the indicator reposition in
+        // OnAfterRenderAsync — flush before the (possibly slow) callback runs.
+        StateHasChanged();
+        await Task.Yield();
+
+        await SelectedItemChanged.InvokeAsync(item);
     }
 
     private async Task OnToggleFavorite(TItem item)
