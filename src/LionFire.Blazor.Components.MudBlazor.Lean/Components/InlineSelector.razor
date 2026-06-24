@@ -194,15 +194,12 @@
     private bool UseIndicator => Size != InlineSelectorSize.Square;
 
     private string IndicatorStyle
-    {
-        get
-        {
-            var bg = SelectedItemColor.HasValue
-                ? GetColorValue(SelectedItemColor.Value)
-                : "var(--mud-palette-primary)";
-            return $"background-color: {bg};";
-        }
-    }
+        // Default look is the soft translucent pill defined in scoped CSS, so emit
+        // nothing. A caller-supplied SelectedItemColor opts into a solid fill of
+        // that colour (with no outline) instead.
+        => SelectedItemColor.HasValue
+            ? $"background-color: {GetColorValue(SelectedItemColor.Value)}; border-color: transparent;"
+            : string.Empty;
 
     private Variant GetItemVariant(bool isSelected)
     {
@@ -216,11 +213,11 @@
 
     private Color GetItemTextColor(bool isSelected)
     {
-        // With the indicator active the selected label sits on the primary-coloured
-        // box, so it needs contrast text (forced white via scoped CSS); Color.Inherit
-        // keeps MudButton from imposing primary-on-primary.
+        // With the translucent pill active the selected label shows in primary
+        // (reads cleanly on the soft fill in any theme). A solid SelectedItemColor
+        // pill instead takes default text for contrast against the opaque fill.
         if (UseIndicator && _jsReady && isSelected)
-            return Color.Inherit;
+            return SelectedItemColor.HasValue ? Color.Default : Color.Primary;
         return isSelected && SelectedItemColor == null ? Color.Primary : Color.Default;
     }
 

@@ -32,7 +32,14 @@
     opacity: 0;
     z-index: 0;
     pointer-events: none;
-    border-radius: var(--mud-default-borderradius, 4px);
+    box-sizing: border-box;
+    /* Soft translucent pill: a faint primary fill + a slightly stronger primary
+       outline. Keeping it translucent (rather than a solid block) means the
+       selected label reads in its own primary colour over any theme background,
+       so there's no contrast flash while the pill slides between options. */
+    border-radius: 999px;
+    background-color: rgba(var(--mud-palette-primary-rgb), 0.18);
+    border: 1px solid rgba(var(--mud-palette-primary-rgb), 0.5);
     transition: left 0.2s ease, top 0.2s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
 }
 
@@ -77,10 +84,11 @@
     z-index: 1;
 }
 
-/* The selected label sits on the primary-coloured highlight (indicator when JS is
-   live, Filled button as the pre-JS fallback) — force contrast text either way. */
+/* Selected label is never dimmed. Its colour is left to MudButton: the pre-JS
+   fallback is a Filled primary button (white text); once the translucent pill is
+   live the button is Text with Color.Primary, so the label shows in primary — which
+   reads cleanly on the soft pill in both light and dark themes. */
 .inline-selector-items ::deep .inline-selector-item-selected {
-    color: var(--mud-palette-primary-text) !important;
     opacity: 1;
 }
 
