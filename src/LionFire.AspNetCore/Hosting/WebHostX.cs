@@ -184,10 +184,7 @@ public static class WebHostX
         {
             foreach (var url in o.Urls)
             {
-                if (urls.Contains(url))
-                {
-                    urls.Add(url);
-                }
+                urls.Add(url); // HashSet dedupes; these are additional listen URLs (e.g. a tailnet interface)
             }
         }
         return urls.ToArray();
