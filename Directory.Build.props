@@ -33,14 +33,19 @@
 	
 	<PropertyGroup>
 
+    <!-- Default BuildRoot to this repo's root when not supplied externally, so the
+         centralized obj/bin paths below resolve to a writable location instead of
+         collapsing to the filesystem root (e.g. "/obj") on Linux. -->
+    <BuildRoot Condition=" '$(BuildRoot)' == '' ">$(MSBuildThisFileDirectory)</BuildRoot>
+
     <!--<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>-->
 
     <!--<BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseIntermediateOutputPath>-->
-    <BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(BuildRoot)/obj/$(Configuration)/$(PlatformTarget)/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
 
-		
-    <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseOutputPath>
+
+    <BaseOutputPath>$(BuildRoot)/bin/$(Configuration)/$(PlatformTarget)/$(MSBuildProjectName)/</BaseOutputPath>
     <!--<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseOutputPath>-->
 		<!--<OutputPath>$(BaseOutputPath)</OutputPath>-->
 		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
