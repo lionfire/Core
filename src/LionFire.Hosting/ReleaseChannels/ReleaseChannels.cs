@@ -72,6 +72,22 @@ public static class ReleaseChannels
     public static int? TryGetReleaseChannelPortOffset(string id)
         => All.Where(r => r.Id == id).FirstOrDefault()?.Precedence;
 
+    /// <summary>
+    /// Number of consecutive ports reserved for each release channel. A single silo instance uses a
+    /// block of ports (HTTP+0, HTTPS+1, Orleans silo+2, gateway+3, dashboard+4, health+5), so channels
+    /// must be spaced by at least that many ports. The per-channel port offset is Precedence * this.
+    /// </summary>
+    public static int PortBlockSize { get; set; } = 10;
+
+    /// <summary>
+    /// The port offset for a release channel: Precedence * <see cref="PortBlockSize"/>.
+    /// Returns 0 for a null/unknown channel id.
+    /// </summary>
+    public static int GetChannelPortOffset(string? id)
+        => (id is null ? null : TryParse(id)?.Precedence) is int precedence
+            ? precedence * PortBlockSize
+            : 0;
+
     //public static Dictionary<string, int> ReleaseChannelPortOffsets = new()
     //{
     //    ["prod"] = 0,

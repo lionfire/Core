@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using LionFire.Deployment;
 using LionFire.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,14 +61,27 @@ public static class ILionFireHostBuilderX
     {
         hab.Services.ConfigurePorts(hab.Configuration);
 
-        hab.Configuration.AddInMemoryCollection([new($"{PortsConfig.DefaultConfigLocation}:{nameof(PortsConfig.BasePort)}", port.ToString())]);
+        // Release-channel port offset: each deployment channel gets its own block of ports
+        // (Precedence * PortBlockSize) from the nominal base, so multiple channels can run on one host.
+        // The channel id is read from the env var directly so this works before .ReleaseChannel() runs.
+        var channelId = hab.Configuration[ReleaseChannelKeys.ReleaseChannel]
+            ?? Environment.GetEnvironmentVariable($"DOTNET_{ReleaseChannelKeys.ReleaseChannel}");
+        var channel = string.IsNullOrEmpty(channelId) ? null : ReleaseChannels.TryParse(channelId);
+        var channelOffset = channel is null ? 0 : channel.Precedence * ReleaseChannels.PortBlockSize;
+        var channeledBasePort = port + channelOffset;
+
+        hab.Configuration.AddInMemoryCollection([new($"{PortsConfig.DefaultConfigLocation}:{nameof(PortsConfig.BasePort)}", channeledBasePort.ToString())]);
         hab.Configuration.AddInMemoryCollection([new($"{PortsConfig.DefaultConfigLocation}:{nameof(PortsConfig.UseFallbackPorts)}", useFallbackPorts.ToString())]);
 
+        // When a release channel is explicitly set, ports are deterministic (nominal base + channel block)
+        // so dev/prod always land on known ports — even for offset-0 channels like Prod/Green (which must
+        // NOT fall into port probing). Only probe for a free block when no channel is in play.
+        var effectiveBasePort = (channel != null || !useFallbackPorts)
+            ? channeledBasePort
+            : GetEffectiveBasePort(channeledBasePort, portCount);
+
         hab.Configuration.AddInMemoryCollection([new($"{PortsConfig.DefaultConfigLocation}:{nameof(PortsConfig.EffectiveBasePort)}",
-                (useFallbackPorts
-                    ? GetEffectiveBasePort(port, portCount)
-                    : port
-                    ).ToString())]
+                effectiveBasePort.ToString())]
             );
 
         return hab;
