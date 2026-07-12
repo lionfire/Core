@@ -1,0 +1,143 @@
+/* ---------------------------------------------------------------------------
+   LionFire theming — the "style personality" axis, plus theme-picker chrome.
+
+   Serve from your app's <head>:
+     <link rel="stylesheet" href="_content/LionFire.Blazor.MudBlazor.Themes/lionfire-themes.css" />
+
+   The style axis is orthogonal to the colour palette. MudBlazor emits all of its
+   typography and radius variables in a single :root{} rule, so an
+   html[data-style="…"] block (higher specificity) cleanly overrides them with no
+   MudTheme rebuild. data-style="default" (or absent) keeps the stock Roboto look.
+
+   Each personality declares only three tokens; the shared block below maps them onto
+   MudBlazor's variables so every component inherits the new fonts and radius. If you
+   offer the style axis, also add ThemeStyles.GoogleFontsHref to your <head>.
+   --------------------------------------------------------------------------- */
+
+html[data-style="technical"] {
+    --lf-font-body: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    --lf-font-display: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+    --lf-radius: 2px;
+}
+
+html[data-style="editorial"] {
+    --lf-font-body: 'Public Sans', 'Helvetica Neue', Arial, sans-serif;
+    --lf-font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --lf-radius: 9px;
+}
+
+html[data-style="humanist"] {
+    --lf-font-body: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+    --lf-font-display: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+    --lf-radius: 6px;
+}
+
+html[data-style="soft"] {
+    --lf-font-body: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
+    --lf-font-display: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
+    --lf-radius: 13px;
+}
+
+/* Map the personality tokens onto MudBlazor's typography + radius variables. */
+html[data-style="technical"], html[data-style="editorial"],
+html[data-style="humanist"], html[data-style="soft"] {
+    --mud-default-borderradius: var(--lf-radius);
+    --mud-typography-default-family: var(--lf-font-body);
+    --mud-typography-body1-family: var(--lf-font-body);
+    --mud-typography-body2-family: var(--lf-font-body);
+    --mud-typography-button-family: var(--lf-font-body);
+    --mud-typography-caption-family: var(--lf-font-body);
+    --mud-typography-subtitle1-family: var(--lf-font-body);
+    --mud-typography-subtitle2-family: var(--lf-font-body);
+    --mud-typography-h1-family: var(--lf-font-display);
+    --mud-typography-h2-family: var(--lf-font-display);
+    --mud-typography-h3-family: var(--lf-font-display);
+    --mud-typography-h4-family: var(--lf-font-display);
+    --mud-typography-h5-family: var(--lf-font-display);
+    --mud-typography-h6-family: var(--lf-font-display);
+    --mud-typography-overline-family: var(--lf-font-display);
+}
+
+html[data-style="technical"] body, html[data-style="editorial"] body,
+html[data-style="humanist"] body, html[data-style="soft"] body {
+    font-family: var(--lf-font-body);
+}
+
+/* Per-personality finishing touches — fonts and radius carry the feel; these just tighten it. */
+html[data-style="technical"] .mud-typography-h4,
+html[data-style="technical"] .mud-typography-h5,
+html[data-style="technical"] .mud-typography-h6 { letter-spacing: -0.02em; }
+
+html[data-style="editorial"] .mud-typography-h3,
+html[data-style="editorial"] .mud-typography-h4,
+html[data-style="editorial"] .mud-typography-h5 { letter-spacing: -0.01em; font-weight: 600; }
+
+html[data-style="soft"] .mud-typography-h4,
+html[data-style="soft"] .mud-typography-h5,
+html[data-style="soft"] .mud-typography-h6 { letter-spacing: 0.005em; }
+
+
+/* ---------------------------------------------------------------------------
+   Theme-picker chrome (ThemeToggle menu swatches + style samples).
+   --------------------------------------------------------------------------- */
+
+.lf-theme-swatches {
+    display: inline-flex;
+    flex: 0 0 auto;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--mud-palette-lines-default);
+}
+
+.lf-theme-swatch {
+    width: 10px;
+    height: 16px;
+    display: block;
+}
+
+.lf-style-sample {
+    display: inline-block;
+    width: 26px;
+    flex: 0 0 auto;
+    font-size: 1rem;
+    line-height: 1;
+    text-align: center;
+    color: var(--mud-palette-text-secondary);
+}
+
+
+/* ---------------------------------------------------------------------------
+   App-shell nav drawer (GL-ux-002).
+
+   Make the drawer a flex column so the nav list is the sole scroll region and the
+   bottom bar — the collapse toggle — stays pinned and always reachable. Scoped CSS
+   can't reach MudBlazor-rendered elements, so these must be global.
+   --------------------------------------------------------------------------- */
+
+.lf-nav-drawer .mud-drawer-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.lf-nav-drawer .lf-nav-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.lf-nav-drawer .lf-nav-bottom {
+    flex: 0 0 auto;
+}
+
+/* The collapse/expand control, pinned bottom-left of the drawer. Left-aligned so that
+   in mini (collapsed) mode it still sits under the icon rail rather than drifting. */
+.lf-nav-collapse-toggle {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 4px 12px 8px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}

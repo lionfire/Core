@@ -1,0 +1,107 @@
+@namespace LionFire.Blazor.MudBlazor_.Theming
+@inject IThemeService ThemeService
+@implements IDisposable
+
+@*
+    App-bar theme selector. The icon reflects the current mode; the menu carries all three
+    axes — palette, style personality, and background brightness — so the shell needs no
+    separate settings page to be fully themeable.
+
+    Usage (inside MudAppBar):  <ThemeToggle />
+*@
+
+<MudMenu Icon="@(ThemeService.IsDark ? Icons.Material.Filled.LightMode : Icons.Material.Filled.DarkMode)"
+         Color="Color.Inherit"
+         AnchorOrigin="Origin.BottomRight"
+         TransformOrigin="Origin.TopRight"
+         Dense="true"
+         aria-label="Select theme">
+    <ChildContent>
+        <div class="px-4 pt-2 pb-1">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary">Theme</MudText>
+        </div>
+
+        @foreach (var name in LionFireThemes.AvailableThemes)
+        {
+            var isCurrent = string.Equals(name, ThemeService.Theme, StringComparison.Ordinal);
+            <MudMenuItem OnClick="@(() => ThemeService.SetThemeAsync(name))">
+                <div class="d-flex align-center" style="min-width: 200px;">
+                    <MudIcon Icon="@Icons.Material.Filled.Check"
+                             Size="Size.Small"
+                             Class="mr-2"
+                             Style="@(isCurrent ? "" : "visibility: hidden;")" />
+                    <span class="lf-theme-swatches mr-2">
+                        @foreach (var color in LionFireThemes.SwatchColors(name))
+                        {
+                            <span class="lf-theme-swatch" style="@($"background-color:{color};")"></span>
+                        }
+                    </span>
+                    <MudText Typo="Typo.body2">@name</MudText>
+                </div>
+            </MudMenuItem>
+        }
+
+        <MudDivider Class="my-1" />
+        <div class="px-4 pt-1 pb-1">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary">Style</MudText>
+        </div>
+
+        @foreach (var style in ThemeStyles.All)
+        {
+            var isCurrent = string.Equals(style.Id, ThemeService.Style, StringComparison.Ordinal);
+            <MudMenuItem OnClick="@(() => ThemeService.SetStyleAsync(style.Id))">
+                <MudTooltip Text="@style.Hint" Placement="Placement.Right">
+                    <div class="d-flex align-center" style="min-width: 200px;">
+                        <MudIcon Icon="@Icons.Material.Filled.Check"
+                                 Size="Size.Small"
+                                 Class="mr-2"
+                                 Style="@(isCurrent ? "" : "visibility: hidden;")" />
+                        <span class="lf-style-sample mr-2" style="@($"font-family:{style.SampleFont};")">Aa</span>
+                        <MudText Typo="Typo.body2">@style.Label</MudText>
+                    </div>
+                </MudTooltip>
+            </MudMenuItem>
+        }
+
+        <MudDivider Class="my-1" />
+
+        @* Clicks inside the slider row must not close the menu, or a drag would dismiss it
+           on mouse-up. *@
+        <div class="px-4 py-2" style="min-width: 240px;" @onclick:stopPropagation="true">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary">Background brightness</MudText>
+            <div class="d-flex align-center gap-2">
+                <MudSlider T="double"
+                           Value="@ThemeService.BackgroundBrightness"
+                           ValueChanged="@(v => ThemeService.SetBackgroundBrightnessAsync(v))"
+                           Min="@IThemeService.MinBrightness"
+                           Max="@IThemeService.MaxBrightness"
+                           Step="0.01"
+                           Immediate="true"
+                           Color="Color.Primary"
+                           Class="flex-grow-1" />
+                <MudText Typo="Typo.body2" Style="min-width: 44px; text-align: right;">
+                    @($"{ThemeService.BackgroundBrightness:+0%;-0%;0%}")
+                </MudText>
+                <MudTooltip Text="Reset to theme default">
+                    <MudIconButton Icon="@Icons.Material.Filled.RestartAlt"
+                                   Size="Size.Small"
+                                   OnClick="@(() => ThemeService.SetBackgroundBrightnessAsync(0))"
+                                   Disabled="@(ThemeService.BackgroundBrightness == 0)"
+                                   aria-label="Reset background brightness" />
+                </MudTooltip>
+            </div>
+        </div>
+    </ChildContent>
+</MudMenu>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        ThemeService.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged(object? sender, string theme) => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => ThemeService.ThemeChanged -= OnThemeChanged;
+}

@@ -1,0 +1,51 @@
+@namespace LionFire.Blazor.MudBlazor_.Theming
+@inject IThemeService ThemeService
+@inject IJSRuntime JS
+@implements IDisposable
+
+@*
+    Drop-in replacement for <MudThemeProvider>. Owns the whole appearance stack:
+    binds the effective palette (named theme + brightness offset), tracks dark mode,
+    and pushes the style personality onto <html data-style="…"> after first render.
+
+    Place it once, at the top of MainLayout (or Routes), instead of MudThemeProvider:
+
+        <LionFireThemeProvider />
+        <MudPopoverProvider />
+        <MudDialogProvider />
+        <MudSnackbarProvider />
+*@
+
+<MudThemeProvider Theme="@ThemeService.EffectiveTheme" IsDarkMode="@ThemeService.IsDark" />
+
+@code {
+    private string? _appliedStyle;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        ThemeService.ThemeChanged += OnThemeChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The style axis is pure CSS (html[data-style]) — no MudTheme rebuild. Push it
+        // whenever it drifts from what the DOM already carries. Best-effort: if JS is
+        // unavailable (prerender, no circuit) the app just keeps the default style.
+        if (_appliedStyle == ThemeService.Style) return;
+
+        try
+        {
+            await JS.InvokeVoidAsync("document.documentElement.setAttribute", "data-style", ThemeService.Style);
+            _appliedStyle = ThemeService.Style;
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or InvalidOperationException)
+        {
+            // No circuit yet — retry on the next render.
+        }
+    }
+
+    private void OnThemeChanged(object? sender, string theme) => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => ThemeService.ThemeChanged -= OnThemeChanged;
+}
