@@ -34,13 +34,9 @@ BuildRoot=. dotnet run
 
 ## Git
 
-Line endings are pinned to LF via `.gitattributes` (`* text=auto eol=lf`), so files no longer flip between CRLF and LF depending on whether they were touched from Windows or WSL.
+Line endings are pinned to LF via `.gitattributes` — don't "fix" line endings you see in diffs.
 
-The repo was renormalized to LF in a single commit, which would otherwise dominate `git blame` on ~500 files. Those line-ending-only commits are listed in `.git-blame-ignore-revs`. GitHub honors that file automatically; local CLI blame needs a one-time opt-in per clone:
-
-```bash
-git config blame.ignoreRevsFile .git-blame-ignore-revs
-```
+Line-ending-only commits are listed in `.git-blame-ignore-revs`. GitHub honors it automatically; for local blame, run once per clone: `git config blame.ignoreRevsFile .git-blame-ignore-revs`
 
 ## Project Structure
 
