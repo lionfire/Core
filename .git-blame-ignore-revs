@@ -1,0 +1,11 @@
+# Line-ending-only commits. No content changes; safe to skip in blame.
+#
+# Enable locally with:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+# GitHub honors this file automatically.
+
+# chore: normalize line endings to LF (CRLF -> LF)
+693e05cac597eb9dff2ba58b5e9cb24fd47888b2
+
+# chore: add .gitattributes (* text=auto eol=lf) and renormalize repo to LF
+c25dc3bd14fd45e279f0c3ef8e85c2f313a60bb8
