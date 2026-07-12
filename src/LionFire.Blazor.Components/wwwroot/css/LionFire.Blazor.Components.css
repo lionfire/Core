@@ -220,7 +220,7 @@ html.lionfire body.dark {
         /*line-height: 3rem;*/
         background: #00000080;
         padding: 0 3px;
-        font-family: 'Novecento';
+        font-family: 'Novecento', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         font-weight: 700;
         /*padding: 2px 4px;*/
     }
