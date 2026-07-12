@@ -7,12 +7,19 @@ using LionFire.Reactive.Persistence;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
 using System.Reactive.Disposables;
 
 namespace LionFire.IO.Reactive.Filesystem;
 
 public static class FsObservableCollectionFactoryX
 {
+    // Each HjsonFsDirectoryReaderRx opens a FileSystemWatcher in its constructor, and on Linux every
+    // FileSystemWatcher consumes one whole inotify instance (fs.inotify.max_user_instances, default 128).
+    // Callers such as WorkspaceLayoutVM re-register the same directory per Blazor circuit, so the readers
+    // must be shared per directory rather than constructed per call.
+    private static readonly ConcurrentDictionary<(Type ValueType, string Path, bool Recursive, int RecursionDepth), object> observablesByDir = new();
+
     public static IServiceCollection RegisterObservablesInSubDirForType<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, IReference parentDir, string? entitySubdir = null, bool recursive = true, bool autosave = true, int recursionDepth = int.MaxValue)
         where TValue : notnull
     {
@@ -43,40 +50,44 @@ public static class FsObservableCollectionFactoryX
     {
         if (valuesDirReferenceSelector.Path is FileReference fileReference) // TODO remove this HARDCODE - allow extensibility via DI instead of this
         {
-            var dirSelector = new DirectorySelector(fileReference.Path)
-            {
-                // FUTURE: Clone any future properties automatically
-                Recursive = valuesDirReferenceSelector.Recursive,
-                RecursionDepth = valuesDirReferenceSelector.RecursionDepth,
-            };
+            var key = (typeof(TValue), fileReference.Path, valuesDirReferenceSelector.Recursive, valuesDirReferenceSelector.RecursionDepth);
 
-            DirectoryTypeOptions DirectoryTypeOptions;
-            HjsonFsDirectoryReaderRx<string, TValue> r;
-            HjsonFsDirectoryWriterRx<string, TValue> w;
+            ObservableReaderWriterFromComponents<string, TValue> c;
             try
             {
-                DirectoryTypeOptions = new DirectoryTypeOptions
+                c = (ObservableReaderWriterFromComponents<string, TValue>)observablesByDir.GetOrAdd(key, _ =>
                 {
-                    ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
-                };
-                DirectoryTypeOptions.SecondExtension = DirectoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
+                    var dirSelector = new DirectorySelector(fileReference.Path)
+                    {
+                        // FUTURE: Clone any future properties automatically
+                        Recursive = valuesDirReferenceSelector.Recursive,
+                        RecursionDepth = valuesDirReferenceSelector.RecursionDepth,
+                    };
 
-                r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
-                w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
+                    var directoryTypeOptions = new DirectoryTypeOptions
+                    {
+                        ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
+                    };
+                    directoryTypeOptions.SecondExtension = directoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
+
+                    var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, directoryTypeOptions);
+                    var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, directoryTypeOptions);
+
+                    var created = new ObservableReaderWriterFromComponents<string, TValue>(r, w);
+                    if (autosave)
+                    {
+                        // Subscribed once for the lifetime of the shared instance, so it is never unsubscribed.
+                        created.AutosaveValueChanges();
+                    }
+                    return created;
+                });
             }
             catch (ObjectDisposedException)
             {
                 return null!; // NULLABILITY OVERRIDE - ServiceProvider disposed during async race
             }
-            return sp =>
-            {
-                var c = new ObservableReaderWriterFromComponents<string, TValue>(r, w);
-                if (autosave)
-                {
-                    var disposable = c.AutosaveValueChanges();
-                }
-                return c;
-            };
+
+            return sp => c;
         }
         else
         {
